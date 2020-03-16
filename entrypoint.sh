@@ -2,6 +2,19 @@
 
 set -eu
 
+generate_common_config() {
+    {
+        echo "bind 0.0.0.0"
+        echo protected-mode yes
+        echo tcp-backlog 511
+        echo timeout 0
+        echo tcp-keepalive 300
+        echo daemonize no
+        echo supervised no
+        echo pidfile /var/run/redis.pid
+    } > /etc/redis/redis.conf
+}
+
 set_redis_password() {
     if [ -z "${REDIS_PASSWORD}" ]; then
         echo "Redis is running without password which is not recommended"
@@ -31,6 +44,7 @@ start_redis() {
 }
 
 main_function() {
+    generate_common_config
     set_redis_password
     redis_mode_setup
     start_redis

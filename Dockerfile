@@ -10,10 +10,6 @@ ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 
 ARG REDIS_VERSION="stable"
 
-COPY redis.conf /etc/redis/redis.conf
-
-COPY entrypoint.sh /usr/bin/entrypoint.sh
-
 RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 999 redis && \
     apk add --no-cache su-exec tzdata make curl build-base linux-headers
 
@@ -26,6 +22,8 @@ RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-
     mkdir -p /etc/redis && \
     cp -f *.conf /etc/redis && \
     rm -rf /tmp/redis-${REDIS_VERSION}*
+
+COPY entrypoint.sh /usr/bin/entrypoint.sh
 
 VOLUME ["/data"]
 
