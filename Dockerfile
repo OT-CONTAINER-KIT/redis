@@ -11,7 +11,7 @@ ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 ARG REDIS_VERSION="stable"
 
 RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 999 redis && \
-    apk add --no-cache su-exec tzdata make curl build-base linux-headers
+    apk add --no-cache su-exec tzdata make curl build-base linux-headers bash
 
 RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
     cd /tmp && \
