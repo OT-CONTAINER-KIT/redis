@@ -34,7 +34,6 @@ main_function() {
     set_redis_password
     redis_mode_setup
     start_redis
-    redis_server_mode
 }
 
 main_function
