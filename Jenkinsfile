@@ -1,5 +1,5 @@
 library 'dockerCI'
 
 node(){
-    dockerScanner.call()
+    dockerCI.call()
 }
