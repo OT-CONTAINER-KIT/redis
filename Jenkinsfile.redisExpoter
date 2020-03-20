@@ -1,0 +1,5 @@
+library 'dockerCI'
+
+node(){
+    dockerScanner.call("redisExpoter_config.properties")
+}
