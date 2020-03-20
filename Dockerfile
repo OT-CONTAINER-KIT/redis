@@ -10,7 +10,7 @@ ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 
 ARG REDIS_VERSION="stable"
 
-RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 999 redis && \
+RUN addgroup -S -g 1001 redis && adduser -S -G redis -u 1001 redis && \
     apk add --no-cache su-exec tzdata make curl build-base linux-headers bash
 
 RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
@@ -21,13 +21,20 @@ RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-
     make install && \
     mkdir -p /etc/redis && \
     cp -f *.conf /etc/redis && \
-    rm -rf /tmp/redis-${REDIS_VERSION}*
+    rm -rf /tmp/redis-${REDIS_VERSION}* && \
+    apk del curl make
+
+COPY redis.conf /etc/redis/redis.conf
 
 COPY entrypoint.sh /usr/bin/entrypoint.sh
+
+COPY run.sh /usr/bin/run.sh
 
 VOLUME ["/data"]
 
 WORKDIR /data
+
+USER redis
 
 EXPOSE 6379
 
