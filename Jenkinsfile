@@ -1,4 +1,4 @@
-library 'dockerScanner'
+library 'dockerCI'
 
 node(){
     dockerScanner.call()
