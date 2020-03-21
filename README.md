@@ -9,9 +9,9 @@ I am a repo which have a production based Redis and Redis Expoer docker image co
 ## Features
 
 This image provides you below features:-
-- [X] Lightweight nature :- Images are quite low in terms of size which will improve your deployment process time.
-- [X] Security Compliant :- Images are security compliant i.e. It doesn't hold any vulnerable package.
-- [X] Best Practices :- We have tried to follow the best practices for writing the Docker images.
+- [X] **Lightweight nature:-** Images are quite low in terms of size which will improve your deployment process time.
+- [X] **Security Compliant:-** Images are security compliant i.e. It doesn't hold any vulnerable package.
+- [X] **Best Practices:-** We have tried to follow the best practices for writing the Docker images.
 
 ## Pre-requisites
 
