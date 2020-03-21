@@ -6,11 +6,11 @@ ARG REDIS_EXPORTER_VERSION="1.5.2"
 
 RUN  apk add --no-cache curl ca-certificates && \
       curl -fL -Lo /tmp/redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-amd64.tar.gz \
-      ${EXPORTER_URL}/${REDIS_EXPORTER_VERSION}/redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-amd64.tar.gz && \
+      ${EXPORTER_URL}/v${REDIS_EXPORTER_VERSION}/redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-amd64.tar.gz && \
       cd /tmp && tar -xvzf redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-amd64.tar.gz && \
       mv redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-amd64 redis_exporter
 
-FROM scratch:latest
+FROM scratch
 
 MAINTAINER Opstree Solutions
 
@@ -20,8 +20,6 @@ LABEL VERSION=1.0 \
 
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 COPY --from=builder /tmp/redis_exporter/redis_exporter /usr/local/bin/redis_exporter
-
-USER non-root
 
 EXPOSE 9121
 
