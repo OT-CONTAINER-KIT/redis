@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  redis:
+    image: opstree/redis:1.0
+    restart: always
+    expose:
+      - 6379
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: standalone

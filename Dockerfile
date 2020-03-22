@@ -34,8 +34,4 @@ VOLUME ["/data"]
 
 WORKDIR /data
 
-EXPOSE 6379
-
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
-
-USER redis
