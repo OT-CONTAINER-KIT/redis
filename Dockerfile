@@ -4,7 +4,7 @@ MAINTAINER Opstree Solutions
 
 LABEL VERSION=1.0 \
       ARCH=AMD64 \
-      DESCRIPTION="A production grade performance tuned docker image created by Opstree Solutions"
+      DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
 
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 
@@ -34,8 +34,8 @@ VOLUME ["/data"]
 
 WORKDIR /data
 
-USER redis
-
 EXPOSE 6379
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+
+USER redis
