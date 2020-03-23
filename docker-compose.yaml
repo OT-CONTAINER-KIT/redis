@@ -1,0 +1,93 @@
+version: '3.3'
+services:
+  redis-master-1:
+    image: opstree/redis:1.0
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 10.5.0.2
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: cluster
+      SERVER_MODE: master
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
+
+  redis-master-2:
+    image: opstree/redis:1.0
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 10.5.0.3
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: cluster
+      SERVER_MODE: master
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
+
+  redis-master-3:
+    image: opstree/redis:1.0
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 10.5.0.4
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: cluster
+      SERVER_MODE: master
+      MASTER_LIST: "10.5.0.2:6379 10.5.0.3:6379 10.5.0.4:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
+
+  redis-slave-1:
+    image: opstree/redis:1.0
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 10.5.0.5
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: cluster
+      SERVER_MODE: slave
+      SLAVE_IP: "10.5.0.5:6379"
+      MASTER_IP: "10.5.0.2:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
+
+  redis-slave-2:
+    image: opstree/redis:1.0
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 10.5.0.6
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: cluster
+      SERVER_MODE: slave
+      SLAVE_IP: "10.5.0.6:6379"
+      MASTER_IP: "10.5.0.3:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
+
+  redis-slave-3:
+    image: opstree/redis:1.0
+    restart: always
+    networks:
+      redis:
+        ipv4_address: 10.5.0.7
+    environment:
+      REDIS_PASSWORD: "Opstree@12345"
+      SETUP_MODE: cluster
+      SERVER_MODE: slave
+      SLAVE_IP: "10.5.0.7:6379"
+      MASTER_IP: "10.5.0.4:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
+
+networks:
+  redis:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16

@@ -28,7 +28,9 @@ COPY redis.conf /etc/redis/redis.conf
 
 COPY entrypoint.sh /usr/bin/entrypoint.sh
 
-COPY run.sh /usr/bin/run.sh
+COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
+
+COPY healthcheck.sh /usr/bin/healthcheck.sh
 
 VOLUME ["/data"]
 
