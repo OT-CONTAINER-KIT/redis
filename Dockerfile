@@ -28,10 +28,12 @@ COPY redis.conf /etc/redis/redis.conf
 
 COPY entrypoint.sh /usr/bin/entrypoint.sh
 
-COPY run.sh /usr/bin/run.sh
+COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
 VOLUME ["/data"]
 
 WORKDIR /data
+
+EXPOSE 6379
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]

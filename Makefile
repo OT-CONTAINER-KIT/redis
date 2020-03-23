@@ -9,7 +9,7 @@ setup-standalone-server-compose:
 
 setup-cluster-compose:
 	docker-compose -f docker-compose.yaml up -d
-	docker-compose exec redis-master-3 /bin/bash -c "/usr/bin/run.sh"
-	docker-compose exec redis-slave-1 /bin/bash -c "/usr/bin/run.sh"
-	docker-compose exec redis-slave-2 /bin/bash -c "/usr/bin/run.sh"
-	docker-compose exec redis-slave-3 /bin/bash -c "/usr/bin/run.sh"
+	docker-compose exec redis-master-3 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
+	docker-compose exec redis-slave-1 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
+	docker-compose exec redis-slave-2 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
+	docker-compose exec redis-slave-3 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
