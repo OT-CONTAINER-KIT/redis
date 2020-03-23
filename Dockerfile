@@ -30,6 +30,8 @@ COPY entrypoint.sh /usr/bin/entrypoint.sh
 
 COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
+COPY healthcheck.sh /usr/bin/healthcheck.sh
+
 VOLUME ["/data"]
 
 WORKDIR /data
@@ -37,3 +39,5 @@ WORKDIR /data
 EXPOSE 6379
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+
+USER redis
