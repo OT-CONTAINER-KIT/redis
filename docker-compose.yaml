@@ -10,6 +10,7 @@ services:
       REDIS_PASSWORD: "Opstree@12345"
       SETUP_MODE: cluster
       SERVER_MODE: master
+      PERSISTENCE_ENABLED: "true"
     healthcheck:
       test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
 
@@ -23,6 +24,7 @@ services:
       REDIS_PASSWORD: "Opstree@12345"
       SETUP_MODE: cluster
       SERVER_MODE: master
+      PERSISTENCE_ENABLED: "true"
     healthcheck:
       test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
 
@@ -37,6 +39,7 @@ services:
       SETUP_MODE: cluster
       SERVER_MODE: master
       MASTER_LIST: "10.5.0.2:6379 10.5.0.3:6379 10.5.0.4:6379"
+      PERSISTENCE_ENABLED: "true"
     healthcheck:
       test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
 
@@ -52,6 +55,7 @@ services:
       SERVER_MODE: slave
       SLAVE_IP: "10.5.0.5:6379"
       MASTER_IP: "10.5.0.2:6379"
+      PERSISTENCE_ENABLED: "true"
     healthcheck:
       test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
 
@@ -67,6 +71,7 @@ services:
       SERVER_MODE: slave
       SLAVE_IP: "10.5.0.6:6379"
       MASTER_IP: "10.5.0.3:6379"
+      PERSISTENCE_ENABLED: "true"
     healthcheck:
       test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
 
@@ -82,6 +87,7 @@ services:
       SERVER_MODE: slave
       SLAVE_IP: "10.5.0.7:6379"
       MASTER_IP: "10.5.0.4:6379"
+      PERSISTENCE_ENABLED: "true"
     healthcheck:
       test: ["CMD-SHELL", "/bin/bash /usr/bin/healthcheck.sh"]
 

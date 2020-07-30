@@ -1,8 +1,8 @@
 build-redis-image:
-	docker build -t opstree/redis:dev -f Dockerfile .
+	docker build -t opstree/redis:1.0 -f Dockerfile .
 
 build-redis-exporter-image:
-	docker build -t opstree/redis-exporter:dev -f Dockerfile.exporter .
+	docker build -t opstree/redis-exporter:1.0 -f Dockerfile.exporter .
 
 setup-standalone-server-compose:
 	docker-compose -f docker-compose-standalone.yaml up -d
