@@ -6,6 +6,13 @@ CLUSTER_DIRECTORY=${CLUSTER_DIRECTORY:-"/opt/redis"}
 PERSISTENCE_ENABLED=${PERSISTENCE_ENABLED:-"false"}
 DATA_DIR=${DATA_DIR:-"/data"}
 
+apply_permissions() {
+    chgrp -R 0 /etc/redis
+    chmod -R g=u /etc/redis
+    chgrp -R 0 /opt
+    chmod -R g=u /opt
+}
+
 common_operation() {
     mkdir -p "${CLUSTER_DIRECTORY}"
     mkdir -p "${DATA_DIR}"
@@ -58,8 +65,13 @@ persistence_setup() {
 }
 
 start_redis() {
-    echo "Starting redis service....."
-    redis-server /etc/redis/redis.conf
+    if [[ "${SETUP_MODE}" == "cluster" ]]; then
+        echo "Starting redis service in cluster mode....."
+        redis-server /etc/redis/redis.conf --cluster-announce-ip "${POD_IP}"
+    else
+        echo "Starting redis service in standalone mode....."
+        redis-server /etc/redis/redis.conf
+    fi
 }
 
 main_function() {
