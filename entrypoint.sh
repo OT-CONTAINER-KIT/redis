@@ -36,7 +36,7 @@ redis_mode_setup() {
             echo cluster-node-timeout 5000
             echo cluster-require-full-coverage no
             echo cluster-migration-barrier 1
-            echo cluster-config-file "${CLUSTER_DIRECTORY}/nodes.conf"
+            echo cluster-config-file "${DATA_DIR}/nodes.conf"
         } >> /etc/redis/redis.conf
 
         if [[ -z "${POD_IP}" ]]; then
