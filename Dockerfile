@@ -32,7 +32,8 @@ COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
 COPY healthcheck.sh /usr/bin/healthcheck.sh
 
-RUN chmod -R g+rwX /etc/redis
+RUN mkdir -p /opt/redis/ && \
+    chmod -R g+rwX /etc/redis /opt/redis
 
 VOLUME ["/data"]
 
