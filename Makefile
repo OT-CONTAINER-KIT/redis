@@ -1,5 +1,5 @@
 build-redis-image:
-	docker build -t quay.io/opstree/redis:6.2 -f Dockerfile .
+	docker build -t quay.io/opstree/redis:6.2.5 -f Dockerfile .
 
 build-redis-exporter-image:
 	docker build -t opstree/redis-exporter:1.0 -f Dockerfile.exporter .

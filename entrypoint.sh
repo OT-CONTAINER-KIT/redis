@@ -5,6 +5,7 @@ set -a
 CLUSTER_DIRECTORY=${CLUSTER_DIRECTORY:-"/opt/redis"}
 PERSISTENCE_ENABLED=${PERSISTENCE_ENABLED:-"false"}
 DATA_DIR=${DATA_DIR:-"/data"}
+EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-external.conf"}
 
 apply_permissions() {
     chgrp -R 0 /etc/redis
@@ -64,6 +65,10 @@ persistence_setup() {
     fi
 }
 
+external_config() {
+    echo "include ${EXTERNAL_CONFIG_FILE}" >> /etc/redis/redis.conf
+}
+
 start_redis() {
     if [[ "${SETUP_MODE}" == "cluster" ]]; then
         echo "Starting redis service in cluster mode....."
@@ -75,6 +80,9 @@ start_redis() {
 }
 
 main_function() {
+    if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
+        external_config
+    fi
     common_operation
     set_redis_password
     redis_mode_setup
