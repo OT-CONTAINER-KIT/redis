@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.9 as builder
 
 MAINTAINER Opstree Solutions
 
@@ -10,19 +10,31 @@ ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 
 ARG REDIS_VERSION="stable"
 
-RUN addgroup -S -g 1001 redis && adduser -S -G redis -u 1001 redis && \
-    apk add --no-cache su-exec tzdata make curl build-base linux-headers bash
+RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash openssl-dev
 
 RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
     cd /tmp && \
     tar xvzf redis-${REDIS_VERSION}.tar.gz && \
     cd redis-${REDIS_VERSION} && \
     make && \
-    make install && \
+    make install BUILD_TLS=yes && \
     mkdir -p /etc/redis && \
-    cp -f *.conf /etc/redis && \
-    rm -rf /tmp/redis-${REDIS_VERSION}* && \
-    apk del curl make
+    cp -f *.conf /etc/redis
+
+FROM alpine:3.9
+
+MAINTAINER Opstree Solutions
+
+LABEL VERSION=1.0 \
+      ARCH=AMD64 \
+      DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
+
+COPY --from=builder /usr/local/bin/redis-server /usr/local/bin/redis-server
+COPY --from=builder /usr/local/bin/redis-cli /usr/local/bin/redis-cli
+COPY --from=builder /etc/redis /etc/redis
+
+RUN addgroup -S -g 1001 redis && adduser -S -G redis -u 1001 redis && \
+    apk add --no-cache bash
 
 COPY redis.conf /etc/redis/redis.conf
 

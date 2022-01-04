@@ -50,6 +50,29 @@ redis_mode_setup() {
     fi
 }
 
+tls_setup() {
+    if [[ "${TLS_MODE}" == "true" ]]; then
+        {
+            echo port 0
+            echo tls-port 6379
+            echo tls-cert-file "${REDIS_TLS_CERT}"
+            echo tls-key-file "${REDIS_TLS_CERT_KEY}"
+            echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
+            # echo tls-prefer-server-ciphers yes
+            echo tls-auth-clients optional
+        } >> /etc/redis/redis.conf
+
+        if [[ "${SETUP_MODE}" == "cluster" ]]; then
+            {
+                echo tls-replication yes
+                echo tls-cluster yes
+            } >> /etc/redis/redis.conf
+        fi
+    else
+        echo "Running without TLS mode"
+    fi
+}
+
 persistence_setup() {
     if [[ "${PERSISTENCE_ENABLED}" == "true" ]]; then
         {
@@ -87,6 +110,7 @@ main_function() {
     set_redis_password
     redis_mode_setup
     persistence_setup
+    tls_setup
     start_redis
 }
 
