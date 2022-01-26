@@ -103,14 +103,14 @@ start_redis() {
 }
 
 main_function() {
-    if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
-        external_config
-    fi
     common_operation
     set_redis_password
     redis_mode_setup
     persistence_setup
     tls_setup
+    if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
+        external_config
+    fi
     start_redis
 }
 
