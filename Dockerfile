@@ -1,4 +1,4 @@
-FROM alpine:3.9 as builder
+FROM alpine:3.15 as builder
 
 MAINTAINER Opstree Solutions
 
@@ -21,7 +21,7 @@ RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-
     mkdir -p /etc/redis && \
     cp -f *.conf /etc/redis
 
-FROM alpine:3.9
+FROM alpine:3.15
 
 MAINTAINER Opstree Solutions
 

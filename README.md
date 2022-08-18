@@ -4,7 +4,7 @@
 
 # Ot-Container-Kit (Redis)
 
-I am a repo which have a production based Redis and Redis Expoer docker image codebase.
+I am a repo which have a production based Redis and Redis Exporter docker image codebase.
 
 ## Features
 
