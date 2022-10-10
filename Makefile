@@ -1,5 +1,5 @@
-REDIS_VERSION ?= 6.2.5
-EXPORTER_VERSION?=1.0
+REDIS_VERSION ?= v7.0.5
+EXPORTER_VERSION ?= v1.44.0
 
 build-redis-image:
 	docker build -t quay.io/opstree/redis:$(REDIS_VERSION) -f Dockerfile .

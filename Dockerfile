@@ -17,9 +17,7 @@ RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-
     tar xvzf redis-${REDIS_VERSION}.tar.gz && \
     cd redis-${REDIS_VERSION} && \
     make && \
-    make install BUILD_TLS=yes && \
-    mkdir -p /etc/redis && \
-    cp -f *.conf /etc/redis
+    make install BUILD_TLS=yes
 
 FROM alpine:3.15
 
@@ -31,9 +29,8 @@ LABEL VERSION=1.0 \
 
 COPY --from=builder /usr/local/bin/redis-server /usr/local/bin/redis-server
 COPY --from=builder /usr/local/bin/redis-cli /usr/local/bin/redis-cli
-COPY --from=builder /etc/redis /etc/redis
 
-RUN addgroup -S -g 1001 redis && adduser -S -G redis -u 1001 redis && \
+RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 1000 redis && \
     apk add --no-cache bash
 
 COPY redis.conf /etc/redis/redis.conf
@@ -43,9 +40,6 @@ COPY entrypoint.sh /usr/bin/entrypoint.sh
 COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
 COPY healthcheck.sh /usr/bin/healthcheck.sh
-
-RUN mkdir -p /opt/redis/ && \
-    chmod -R g+rwX /etc/redis /opt/redis
 
 VOLUME ["/data"]
 
