@@ -41,10 +41,14 @@ COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
 COPY healthcheck.sh /usr/bin/healthcheck.sh
 
+RUN chown -R redis:redis /etc/redis
+
 VOLUME ["/data"]
 
 WORKDIR /data
 
 EXPOSE 6379
+
+USER 1000
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]

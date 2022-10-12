@@ -19,10 +19,12 @@ common_operation() {
 set_redis_password() {
     if [[ -z "${REDIS_PASSWORD}" ]]; then
         echo "Redis is running without password which is not recommended"
+        echo "protected-mode no" >> /etc/redis/redis.conf
     else
         {
             echo masterauth "${REDIS_PASSWORD}"
             echo requirepass "${REDIS_PASSWORD}"
+            echo protected-mode yes
         } >> /etc/redis/redis.conf
     fi
 }
@@ -37,12 +39,8 @@ redis_mode_setup() {
             echo cluster-config-file "${DATA_DIR}/nodes.conf"
         } >> /etc/redis/redis.conf
 
-        if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
-          if [[ -z "${POD_IP}" ]]; then
-              POD_IP=$(hostname -i)
-          fi
-          sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${DATA_DIR}/nodes.conf"
-        fi
+        POD_IP=$(hostname -i)
+        sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${DATA_DIR}/nodes.conf"
     else
         echo "Setting up redis in standalone mode"
     fi
