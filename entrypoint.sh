@@ -4,7 +4,7 @@ set -a
 
 PERSISTENCE_ENABLED=${PERSISTENCE_ENABLED:-"false"}
 DATA_DIR=${DATA_DIR:-"/data"}
-EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-external.conf"}
+EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-additional.conf"}
 REDIS_MAJOR_VERSION=${REDIS_MAJOR_VERSION:-"v7"}
 
 apply_permissions() {
