@@ -1,11 +1,20 @@
 REDIS_VERSION ?= v7.0.5
 EXPORTER_VERSION ?= v1.44.0
 
-build-redis-image:
-	docker build -t quay.io/opstree/redis:$(REDIS_VERSION) -f Dockerfile .
+IMG ?= quay.io/opstree/redis:$(REDIS_VERSION)
+EXPORTER_IMG ?= opstree/redis-exporter:$(EXPORTER_VERSION)
 
-build-redis-exporter-image:
-	docker build -t opstree/redis-exporter:$(EXPORTER_VERSION) -f Dockerfile.exporter .
+build-redis:
+	docker build -t ${IMG} -f Dockerfile .
+
+push-redis:
+	docker push ${IMG}
+
+build-redis-exporter:
+	docker build -t ${EXPORTER_IMG} -f Dockerfile.exporter .
+
+push-redis-exporter:
+	docker push ${EXPORTER_IMG}
 
 setup-standalone-server-compose:
 	docker-compose -f docker-compose-standalone.yaml up -d
