@@ -29,4 +29,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: softonic/redis-cluster-image:${{ github.ref }}
+          tags: softonic/redis-cluster-image:${{ github.ref_name }}
