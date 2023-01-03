@@ -8,7 +8,7 @@ external_config() {
 
 start_sentinel() {
 
-  echo "Starting redis sentinel service in standalone mode....."
+  echo "Starting redis sentinel service ....."
     redis-sentinel /etc/redis/sentinel.conf
   
 }
