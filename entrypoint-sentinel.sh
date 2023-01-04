@@ -6,7 +6,7 @@ PORT=${PORT:-6379}
 IP=${IP:-0.0.0.0}
 QUORUM=${QUORUM:-2}
 
-#Sentinel Config
+#Sentinel Config here
 EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-sentinel-additional.conf"}
 DOWN_AFTER_MILLISECONDS=${DOWN_AFTER_MILLISECONDS:-30000}
 PARALLEL_SYNCS=${PARALLEL_SYNCS:-1}
