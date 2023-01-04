@@ -15,7 +15,7 @@ FAILOVER_TIMEOUT=${FAILOVER_TIMEOUT:-180000}
 
 sentinel_mode_setup(){
   {
-    echo "sentinel monitor ${MASTER_GROUP_NAME} ${IP} ${PORT} ${QUORUM}"
+    # echo "sentinel monitor ${MASTER_GROUP_NAME} ${IP} ${PORT} ${QUORUM}"
     echo "sentinel down-after-milliseconds ${MASTER_GROUP_NAME} ${DOWN_AFTER_MILLISECONDS}"
     echo "sentinel parallel-syncs ${MASTER_GROUP_NAME} ${PARALLEL_SYNCS}"
     echo "sentinel failover-timeout ${MASTER_GROUP_NAME} ${FAILOVER_TIMEOUT}"
