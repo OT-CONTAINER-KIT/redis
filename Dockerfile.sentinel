@@ -40,7 +40,7 @@ RUN chown -R redis:redis /etc/redis
 
 VOLUME ["/sentinel-data"]
 
-WORKDIR /data
+WORKDIR /sentinel-data
 
 EXPOSE 26379
 
