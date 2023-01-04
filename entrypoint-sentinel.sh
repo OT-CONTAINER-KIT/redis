@@ -29,7 +29,7 @@ external_config() {
 
 start_sentinel() {
 
-  echo "Starting redis sentinel service ....."
+  echo "Starting  sentinel service ....."
     redis-sentinel /etc/redis/sentinel.conf
   
 }
