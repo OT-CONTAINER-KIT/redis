@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #Redis Configuration needed
+MASTER_GROUP_NAME=${MASTER_GROUP_NAME:-"mymaster"}
 PORT=${PORT:-6379}
 IP=${IP:-0.0.0.0}
 QUORUM=${QUORUM:-2}
