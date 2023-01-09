@@ -34,7 +34,7 @@ COPY sentinel.conf /etc/redis/sentinel.conf
 
 COPY entrypoint-sentinel.sh /usr/bin/entrypoint-sentinel.sh
 
-COPY healthcheck.sh /usr/bin/healthcheck.sh
+COPY healthcheck-Sentinel.sh /usr/bin/healthcheck.sh
 
 RUN chown -R redis:redis /etc/redis
 
