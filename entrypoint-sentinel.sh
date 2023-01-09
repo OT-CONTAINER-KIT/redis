@@ -36,7 +36,7 @@ start_sentinel() {
 
 main_function() {
 
- # sentinel_mode_setup
+  sentinel_mode_setup
 
   if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
     external_config
