@@ -47,6 +47,8 @@ VOLUME ["/data"]
 
 WORKDIR /data
 
+RUN chown redis:redis /data
+
 EXPOSE 6379
 
 USER 1000
