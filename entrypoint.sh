@@ -78,7 +78,7 @@ acl_setup(){
     while read -r first second rest; 
     do 
         PASSWORD="$(eval echo "\$${second}_password")"
-        echo "${first} ${second} ${rest} ${PASSWORD}" >> "${ACL_FILE_LOCATION}/${TMP_FILE}"
+        echo "${first} ${second} ${rest} >${PASSWORD}" >> "${ACL_FILE_LOCATION}/${TMP_FILE}"
     done < "${ACL_FILE_LOCATION}/user.acl"
 
     # Overwrite the original file with the modified content
