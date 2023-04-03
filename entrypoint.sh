@@ -6,6 +6,8 @@ PERSISTENCE_ENABLED=${PERSISTENCE_ENABLED:-"false"}
 DATA_DIR=${DATA_DIR:-"/data"}
 EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-additional.conf"}
 REDIS_MAJOR_VERSION=${REDIS_MAJOR_VERSION:-"v7"}
+ACL_FILE_LOCATION=${ACL_FILE_LOCATION:-"/etc/redis/user.acl"}
+TMP_FILE="user.acl.tmp"
 
 apply_permissions() {
     chgrp -R 1000 /etc/redis
@@ -69,6 +71,24 @@ tls_setup() {
     fi
 }
 
+acl_setup(){
+   
+    if [[ "$ACL_MODE" == "true" ]]; then
+
+    while read -r first second rest; 
+    do 
+        PASSWORD="$(eval echo "\$${second}_password")"
+        echo "${first} ${second} ${rest} ${PASSWORD}" >> "${ACL_FILE_LOCATION}/${TMP_FILE}"
+    done < "${ACL_FILE_LOCATION}/user.acl"
+
+    # Overwrite the original file with the modified content
+    mv "${ACL_FILE_LOCATION}/${TMP_FILE}" "${ACL_FILE_LOCATION}/user.acl"
+
+    else
+    echo "ACL_MODE is not true, skipping ACL file modification"
+    fi
+}
+
 persistence_setup() {
     if [[ "${PERSISTENCE_ENABLED}" == "true" ]]; then
         {
@@ -108,6 +128,7 @@ main_function() {
     redis_mode_setup
     persistence_setup
     tls_setup
+    acl_setup
     if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
         external_config
     fi
