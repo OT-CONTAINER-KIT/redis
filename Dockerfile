@@ -41,7 +41,9 @@ COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
 COPY healthcheck.sh /usr/bin/healthcheck.sh
 
-RUN chown -R redis:redis /etc/redis
+# Make configuration writable for root for OpenShift compatibility
+RUN chown -R 1000:0 /etc/redis && \
+    chmod -R g+rw /etc/redis
 
 VOLUME ["/data"]
 
