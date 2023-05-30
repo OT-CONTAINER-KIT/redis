@@ -41,7 +41,11 @@ COPY setupMasterSlave.sh /usr/bin/setupMasterSlave.sh
 
 COPY healthcheck.sh /usr/bin/healthcheck.sh
 
-RUN chown -R redis:redis /etc/redis
+RUN chown -R 1000:0 /etc/redis && \
+    chmod -R g+rw /etc/redis && \
+    mkdir /data && \
+    chown -R 1000:0 /data && \
+    chmod -R g+rw /data
 
 VOLUME ["/data"]
 
