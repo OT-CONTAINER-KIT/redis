@@ -39,6 +39,7 @@ redis_mode_setup() {
             echo cluster-config-file "${DATA_DIR}/nodes.conf"
         } >> /etc/redis/redis.conf
 
+        POD_HOSTNAME=$(hostname)
         POD_IP=$(hostname -i)
         sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${DATA_DIR}/nodes.conf"
     else
@@ -62,6 +63,7 @@ tls_setup() {
             {
                 echo tls-replication yes
                 echo tls-cluster yes
+                echo cluster-preferred-endpoint-type hostname
             } >> /etc/redis/redis.conf
         fi
     else
@@ -103,7 +105,9 @@ start_redis() {
     if [[ "${SETUP_MODE}" == "cluster" ]]; then
         echo "Starting redis service in cluster mode....."
         if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
-          redis-server /etc/redis/redis.conf --cluster-announce-ip "${POD_IP}"
+          redis-server /etc/redis/redis.conf \
+          --cluster-announce-ip "${POD_IP}" \
+          --cluster-announce-hostname "${POD_HOSTNAME}"
         else
           redis-server /etc/redis/redis.conf
         fi
