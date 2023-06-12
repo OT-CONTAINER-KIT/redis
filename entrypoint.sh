@@ -4,6 +4,7 @@ set -a
 
 PERSISTENCE_ENABLED=${PERSISTENCE_ENABLED:-"false"}
 DATA_DIR=${DATA_DIR:-"/data"}
+NODE_CONF_DIR=${NODE_CONF_DIR:-"/node-conf"}
 EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-additional.conf"}
 REDIS_MAJOR_VERSION=${REDIS_MAJOR_VERSION:-"v7"}
 
@@ -14,6 +15,7 @@ apply_permissions() {
 
 common_operation() {
     mkdir -p "${DATA_DIR}"
+    mkdir -p "${NODE_CONF_DIR}"
 }
 
 set_redis_password() {
@@ -36,11 +38,11 @@ redis_mode_setup() {
             echo cluster-node-timeout 5000
             echo cluster-require-full-coverage no
             echo cluster-migration-barrier 1
-            echo cluster-config-file "${DATA_DIR}/nodes.conf"
+            echo cluster-config-file "${NODE_CONF_DIR}/nodes.conf"
         } >> /etc/redis/redis.conf
 
         POD_IP=$(hostname -i)
-        sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${DATA_DIR}/nodes.conf"
+        sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${NODE_CONF_DIR}/nodes.conf"
     else
         echo "Setting up redis in standalone mode"
     fi
