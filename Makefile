@@ -1,5 +1,5 @@
-REDIS_VERSION ?= v7.0.5
-EXPORTER_VERSION ?= v1.44.0
+REDIS_VERSION ?= v7.0.9
+EXPORTER_VERSION ?= v1.48.0
 
 IMG ?= quay.io/opstree/redis:$(REDIS_VERSION)
 EXPORTER_IMG ?= opstree/redis-exporter:$(EXPORTER_VERSION)
