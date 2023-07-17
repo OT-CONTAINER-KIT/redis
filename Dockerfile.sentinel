@@ -6,14 +6,14 @@ LABEL VERSION=1.0 \
 
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 
-ARG REDIS_VERSION="stable"
+ARG REDIS_SENTINEL_VERSION="stable"
 
 RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash openssl-dev
 
-RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
+RUN curl -fL -Lo /tmp/redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
     cd /tmp && \
-    tar xvzf redis-${REDIS_VERSION}.tar.gz && \
-    cd redis-${REDIS_VERSION} && \
+    tar xvzf redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
+    cd redis-${REDIS_SENTINEL_VERSION} && \
     make && \
     make install BUILD_TLS=yes
 
