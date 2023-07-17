@@ -1,23 +1,27 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
 jobs:
-  build:
+  build_dockerfile:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-
     - name: Build Dockerfile
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-      
+      run: docker build . --file Dockerfile --tag redis:$(date +%s)
+
+  build_dockerfile_exporter:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
     - name: Build Dockerfile.exporter
-      run: docker build . --file Dockerfile.exporter --tag my-image-exporter:$(date +%s)
-      
+      run: docker build . --file Dockerfile.exporter --tag redis-exporter:$(date +%s)
+
+  build_dockerfile_sentinel:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
     - name: Build Dockerfile.sentinel
-      run: docker build . --file Dockerfile.sentinel --tag my-image-sentinel:$(date +%s)
+      run: docker build . --file Dockerfile.sentinel --tag redis-sentinel:$(date +%s)
