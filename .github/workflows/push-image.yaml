@@ -31,7 +31,7 @@ jobs:
 
     - name: Build and push Redis Exporter
       env:
-        REDIS_EXPORTER_VERSION: 1.0.0
+        REDIS_EXPORTER_VERSION: 1.48.0
       run: |
         docker build . --file Dockerfile.exporter --tag quay.io/${{ secrets.QUAY_USERNAME }}/redis-exporter:${REDIS_EXPORTER_VERSION} --build-arg REDIS_EXPORTER_VERSION=${REDIS_EXPORTER_VERSION}
         docker push quay.io/${{ secrets.QUAY_USERNAME }}/redis-exporter:${REDIS_EXPORTER_VERSION}
