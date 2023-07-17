@@ -20,6 +20,16 @@ Here are the list of pre-requisites which is required for development and setup 
 - **Docker Engine**
 - **Docker Compose**
 
+## Image Compatibility
+
+The following table shows the compatibility between the Operator Version, Redis Image, Sentinel Image, and Exporter Image:
+
+| Operator Version | Redis Image | Sentinel Image | Exporter Image |
+|------------------|-------------|----------------|----------------|
+| v0.15.0          | v7.0.11     | v7.0.11        | v1.48.0        |
+| v0.14.0          | v7.0.7      | v7.0.7         | v1.48.0        |
+| v0.13.0          | v6.2.5      | nil            | v1.48.0        |
+
 That's it
 
 ## Building Image
