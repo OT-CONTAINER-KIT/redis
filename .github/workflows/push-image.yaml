@@ -17,21 +17,21 @@ jobs:
 
     - name: Build and push Redis
       env:
-        REDIS_VERSION: 7.0.11
+        REDIS_VERSION: latest
       run: |
-        docker build . --file Dockerfile --tag quay.io/${{ secrets.QUAY_USERNAME }}/redis:${REDIS_VERSION} --build-arg REDIS_VERSION=${REDIS_VERSION}
-        docker push quay.io/${{ secrets.QUAY_USERNAME }}/redis:${REDIS_VERSION}
+        docker build . --file Dockerfile --tag quay.io/opstree/redis:${REDIS_VERSION}
+        docker push quay.io/opstree/redis:${REDIS_VERSION}
 
     - name: Build and push Redis Sentinel
       env:
-        REDIS_SENTINEL_VERSION: 7.0.11
+        REDIS_SENTINEL_VERSION: latest
       run: |
-        docker build . --file Dockerfile.sentinel --tag quay.io/${{ secrets.QUAY_USERNAME }}/redis-sentinel:${REDIS_SENTINEL_VERSION} --build-arg REDIS_SENTINEL_VERSION=${REDIS_SENTINEL_VERSION}
-        docker push quay.io/${{ secrets.QUAY_USERNAME }}/redis-sentinel:${REDIS_SENTINEL_VERSION}
+        docker build . --file Dockerfile.sentinel --tag quay.io/opstree/redis-sentinel:${REDIS_SENTINEL_VERSION}
+        docker push quay.io/opstree/redis-sentinel:${REDIS_SENTINEL_VERSION}
 
     - name: Build and push Redis Exporter
       env:
-        REDIS_EXPORTER_VERSION: 1.48.0
+        REDIS_EXPORTER_VERSION: latest
       run: |
-        docker build . --file Dockerfile.exporter --tag quay.io/${{ secrets.QUAY_USERNAME }}/redis-exporter:${REDIS_EXPORTER_VERSION} --build-arg REDIS_EXPORTER_VERSION=${REDIS_EXPORTER_VERSION}
-        docker push quay.io/${{ secrets.QUAY_USERNAME }}/redis-exporter:${REDIS_EXPORTER_VERSION}
+        docker build . --file Dockerfile.exporter --tag quay.io/opstree/redis-exporter:${REDIS_EXPORTER_VERSION}
+        docker push quay.io/opstree/redis-exporter:${REDIS_EXPORTER_VERSION}
