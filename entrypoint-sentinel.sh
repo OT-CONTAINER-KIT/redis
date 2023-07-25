@@ -32,13 +32,13 @@ external_config() {
 set_sentinel_password() {
     if [[ -z "${REDIS_PASSWORD}" ]]; then
         echo "Sentinel is running without password which is not recommended"
-        echo "protected-mode no" >> etc/redis/sentinel.conf
+        echo "protected-mode no" >> /etc/redis/sentinel.conf
     else
         {
             echo masterauth "${REDIS_PASSWORD}"
             echo requirepass "${REDIS_PASSWORD}"
             echo protected-mode yes
-        } >> etc/redis/sentinel.conf
+        } >> /etc/redis/sentinel.conf
     fi
 }
 
