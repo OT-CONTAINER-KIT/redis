@@ -73,6 +73,17 @@ tls_setup() {
     fi
 }
 
+acl_setup(){
+    if [[ "$ACL_MODE" == "true" ]]; then
+        {
+            echo aclfile /etc/redis/user.acl
+            } >> /etc/redis/redis.conf
+
+    else
+        echo "ACL_MODE is not true, skipping ACL file modification"
+    fi
+}
+
 persistence_setup() {
     if [[ "${PERSISTENCE_ENABLED}" == "true" ]]; then
         {
@@ -114,6 +125,7 @@ main_function() {
     redis_mode_setup
     persistence_setup
     tls_setup
+    acl_setup
     if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
         external_config
     fi

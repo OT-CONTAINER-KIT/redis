@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -a
+
 #Redis Configuration needed
 MASTER_GROUP_NAME=${MASTER_GROUP_NAME:-"mymaster"}
 PORT=${PORT:-6379}
@@ -27,21 +29,63 @@ external_config() {
   echo "include ${EXTERNAL_CONFIG_FILE}" >> /etc/redis/sentinel.conf
 }
 
+set_sentinel_password() {
+    if [[ -z "${REDIS_PASSWORD}" ]]; then
+        echo "Sentinel is running without password which is not recommended"
+        echo "protected-mode no" >> /etc/redis/sentinel.conf
+    else
+        {
+            echo masterauth "${REDIS_PASSWORD}"
+            echo requirepass "${REDIS_PASSWORD}"
+            echo protected-mode yes
+        } >> /etc/redis/sentinel.conf
+    fi
+}
+
+tls_setup() {
+    if [[ "${TLS_MODE}" == "true" ]]; then
+        {
+            echo port 0
+            echo tls-port 26379
+            echo tls-cert-file "${REDIS_TLS_CERT}"
+            echo tls-key-file "${REDIS_TLS_CERT_KEY}"
+            echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
+            # echo tls-prefer-server-ciphers yes
+            echo tls-auth-clients optional
+        } >> /etc/redis/sentinel.conf
+
+    else
+        echo "Running sentinel without TLS mode"
+    fi
+}
+
+acl_setup(){
+    if [[ "$ACL_MODE" == "true" ]]; then
+        {
+            echo aclfile /etc/redis/user.acl
+            } >> /etc/redis/redis.conf
+
+    else
+        echo "ACL_MODE is not true, skipping ACL file modification"
+    fi
+}
+
 start_sentinel() {
 
   echo "Starting  sentinel service ....."
     redis-sentinel /etc/redis/sentinel.conf
   
+
 }
 
 main_function() {
 
+  set_sentinel_password
   sentinel_mode_setup
-
+  tls_setup
+  acl_setup
   if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
     external_config
   fi
   start_sentinel
 }
-
-main_function
