@@ -59,6 +59,17 @@ tls_setup() {
     fi
 }
 
+acl_setup(){
+    if [[ "$ACL_MODE" == "true" ]]; then
+        {
+            echo aclfile /etc/redis/user.acl
+            } >> /etc/redis/redis.conf
+
+    else
+        echo "ACL_MODE is not true, skipping ACL file modification"
+    fi
+}
+
 start_sentinel() {
 
   echo "Starting  sentinel service ....."
@@ -71,6 +82,7 @@ main_function() {
   set_sentinel_password
   sentinel_mode_setup
   tls_setup
+  acl_setup
   if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
     external_config
   fi
