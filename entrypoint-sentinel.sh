@@ -63,7 +63,7 @@ acl_setup(){
     if [[ "$ACL_MODE" == "true" ]]; then
         {
             echo aclfile /etc/redis/user.acl
-            } >> /etc/redis/redis.conf
+            } >> /etc/redis/sentinel.conf
 
     else
         echo "ACL_MODE is not true, skipping ACL file modification"
