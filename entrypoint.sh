@@ -106,9 +106,15 @@ external_config() {
 start_redis() {
     if [[ "${SETUP_MODE}" == "cluster" ]]; then
         echo "Starting redis service in cluster mode....."
+        if [[ "${NODEPORT}" == "true" ]]; then
+            CLUSTER_ANNOUNCE_IP="node-ip-$(hostname)"
+        else
+            CLUSTER_ANNOUNCE_IP="${POD_IP}"
+        fi
+
         if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
           redis-server /etc/redis/redis.conf \
-          --cluster-announce-ip "${POD_IP}" \
+          --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}" \
           --cluster-announce-hostname "${POD_HOSTNAME}"
         else
           redis-server /etc/redis/redis.conf
