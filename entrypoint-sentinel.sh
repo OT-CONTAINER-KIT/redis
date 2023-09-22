@@ -89,3 +89,5 @@ main_function() {
   fi
   start_sentinel
 }
+
+main_function

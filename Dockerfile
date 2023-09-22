@@ -45,7 +45,10 @@ RUN chown -R 1000:0 /etc/redis && \
     chmod -R g+rw /etc/redis && \
     mkdir /data && \
     chown -R 1000:0 /data && \
-    chmod -R g+rw /data
+    chmod -R g+rw /data && \
+    mkdir /node-conf && \
+    chown -R 1000:0 /node-conf && \
+    chmod -R g+rw /node-conf
 
 VOLUME ["/data"]
 
