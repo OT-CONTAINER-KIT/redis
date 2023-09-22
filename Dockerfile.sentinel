@@ -36,7 +36,11 @@ COPY entrypoint-sentinel.sh /usr/bin/entrypoint-sentinel.sh
 
 COPY healthcheck-Sentinel.sh /usr/bin/healthcheck.sh
 
-RUN chown -R redis:redis /etc/redis
+RUN chown -R 1000:0 /etc/redis && \
+    chmod -R g+rw /etc/redis && \
+    mkdir /sentinel-data && \
+    chown -R 1000:0 /sentinel-data && \
+    chmod -R g+rw /sentinel-data
 
 VOLUME ["/sentinel-data"]
 
