@@ -4,42 +4,80 @@ on:
   push:
     branches: [master]
 
+env:
+  REDIS_VERSION: latest
+  REDIS_SENTINEL_VERSION: latest
+  REDIS_EXPORTER_VERSION: latest
+
 jobs:
   build_redis:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Login to Quay
-        run: docker login quay.io -u ${{ secrets.QUAY_USERNAME }} -p ${{ secrets.QUAY_PASSWORD }}
-      - name: Build and push Redis
-        env:
-          REDIS_VERSION: latest
-        run: |
-          docker build . --file Dockerfile --tag quay.io/opstree/redis:${REDIS_VERSION}
-          docker push quay.io/opstree/redis:${REDIS_VERSION}
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - name: Build and push multi-arch latest image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: quay.io/opstree/redis:${{ env.REDIS_VERSION }}
 
   build_redis_sentinel:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Login to Quay
-        run: docker login quay.io -u ${{ secrets.QUAY_USERNAME }} -p ${{ secrets.QUAY_PASSWORD }}
-      - name: Build and push Redis Sentinel
-        env:
-          REDIS_SENTINEL_VERSION: latest
-        run: |
-          docker build . --file Dockerfile.sentinel --tag quay.io/opstree/redis-sentinel:${REDIS_SENTINEL_VERSION}
-          docker push quay.io/opstree/redis-sentinel:${REDIS_SENTINEL_VERSION}
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - name: Build and push multi-arch latest image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile.sentinel
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: quay.io/opstree/redis-sentinel:${{ env.REDIS_SENTINEL_VERSION }}
 
   build_redis_exporter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Login to Quay
-        run: docker login quay.io -u ${{ secrets.QUAY_USERNAME }} -p ${{ secrets.QUAY_PASSWORD }}
-      - name: Build and push Redis Exporter
-        env:
-          REDIS_EXPORTER_VERSION: latest
-        run: |
-          docker build . --file Dockerfile.exporter --tag quay.io/opstree/redis-exporter:${REDIS_EXPORTER_VERSION}
-          docker push quay.io/opstree/redis-exporter:${REDIS_EXPORTER_VERSION}
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - name: Build and push multi-arch latest image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile.exporter
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: quay.io/opstree/redis-exporter:${{ env.REDIS_EXPORTER_VERSION }}

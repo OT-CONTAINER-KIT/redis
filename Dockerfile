@@ -2,8 +2,10 @@ FROM alpine:3.15 as builder
 
 MAINTAINER Opstree Solutions
 
+ARG TARGETARCH
+
 LABEL VERSION=1.0 \
-      ARCH=AMD64 \
+      ARCH=$TARGETARCH \
       DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
 
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
@@ -23,8 +25,10 @@ FROM alpine:3.15
 
 MAINTAINER Opstree Solutions
 
+ARG TARGETARCH
+
 LABEL VERSION=1.0 \
-      ARCH=AMD64 \
+      ARCH=$TARGETARCH \
       DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
 
 COPY --from=builder /usr/local/bin/redis-server /usr/local/bin/redis-server

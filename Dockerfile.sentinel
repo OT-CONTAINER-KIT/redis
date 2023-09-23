@@ -1,7 +1,9 @@
 FROM alpine:3.15 as builder
 
+ARG TARGETARCH
+
 LABEL VERSION=1.0 \
-      ARCH=AMD64 \
+      ARCH=$TARGETARCH \
       DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
 
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
@@ -19,8 +21,10 @@ RUN curl -fL -Lo /tmp/redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_UR
 
 FROM alpine:3.15
 
+ARG TARGETARCH
+
 LABEL VERSION=1.0 \
-      ARCH=AMD64 \
+      ARCH=$TARGETARCH \
       DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
 
 
