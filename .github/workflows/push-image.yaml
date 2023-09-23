@@ -31,7 +31,7 @@ jobs:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
           tags: quay.io/opstree/redis:${{ env.REDIS_VERSION }}
 
   build_redis_sentinel:
@@ -55,7 +55,7 @@ jobs:
           context: .
           file: Dockerfile.sentinel
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
           tags: quay.io/opstree/redis-sentinel:${{ env.REDIS_SENTINEL_VERSION }}
 
   build_redis_exporter:
@@ -79,5 +79,5 @@ jobs:
           context: .
           file: Dockerfile.exporter
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
           tags: quay.io/opstree/redis-exporter:${{ env.REDIS_EXPORTER_VERSION }}
