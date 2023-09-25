@@ -37,6 +37,7 @@ set_sentinel_password() {
         {
             echo masterauth "${REDIS_PASSWORD}"
             echo requirepass "${REDIS_PASSWORD}"
+	    echo sentinel auth-pass "${MASTER_GROUP_NAME} ${REDIS_PASSWORD}"
             echo protected-mode yes
         } >> /etc/redis/sentinel.conf
     fi
