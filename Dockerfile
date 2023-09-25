@@ -55,6 +55,7 @@ RUN chown -R 1000:0 /etc/redis && \
     chmod -R g+rw /node-conf
 
 VOLUME ["/data"]
+VOLUME ["/node-conf"]
 
 WORKDIR /data
 
