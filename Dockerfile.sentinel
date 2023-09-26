@@ -40,7 +40,8 @@ RUN chown -R 1000:0 /etc/redis && \
     chmod -R g+rw /etc/redis && \
     mkdir /sentinel-data && \
     chown -R 1000:0 /sentinel-data && \
-    chmod -R g+rw /sentinel-data
+    chmod -R g+rw /sentinel-data && \
+    chmod -R g+rw /var/run
 
 VOLUME ["/sentinel-data"]
 
