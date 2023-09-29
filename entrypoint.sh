@@ -111,10 +111,19 @@ start_redis() {
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
+        
+        if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
+          redis-server /etc/redis/redis.conf \
+          --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}" \
+          --cluster-announce-hostname "${POD_HOSTNAME}"
+        else
+          {
+            echo cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
+            echo cluster-announce-hostname "${POD_HOSTNAME}"
+          } >> /etc/redis/redis.conf
 
-        redis-server /etc/redis/redis.conf \
-        --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}" \
-        --cluster-announce-hostname "${POD_HOSTNAME}"
+          redis-server /etc/redis/redis.conf
+        fi
 
     else
         echo "Starting redis service in standalone mode....."
