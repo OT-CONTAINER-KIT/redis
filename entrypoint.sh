@@ -117,11 +117,12 @@ start_redis() {
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}" \
           --cluster-announce-hostname "${POD_HOSTNAME}"
         else
-          redis-server /etc/redis/redis.conf
           {
             echo cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
             echo cluster-announce-hostname "${POD_HOSTNAME}"
           } >> /etc/redis/redis.conf
+
+          redis-server /etc/redis/redis.conf
         fi
 
     else
