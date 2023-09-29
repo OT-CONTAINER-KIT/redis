@@ -111,7 +111,7 @@ start_redis() {
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
-
+        
         if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
           redis-server /etc/redis/redis.conf \
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}" \
