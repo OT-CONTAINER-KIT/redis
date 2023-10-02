@@ -107,7 +107,7 @@ start_redis() {
     if [[ "${SETUP_MODE}" == "cluster" ]]; then
         echo "Starting redis service in cluster mode....."
         if [[ "${NODEPORT}" == "true" ]]; then
-            CLUSTER_ANNOUNCE_IP="node-ip-$(hostname)"
+            CLUSTER_ANNOUNCE_IP="${!node-ip-$(hostname)}"
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
