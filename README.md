@@ -40,13 +40,13 @@ That's it
 #### Redis Docker Image
 
 ```shell
-make build-redis-image
+make build-redis
 ```
 
 #### Redis Exporter Docker Image
 
 ```shell
-make build-redis-exporter-image
+make build-redis-exporter
 ```
 
 ## Running Setup
