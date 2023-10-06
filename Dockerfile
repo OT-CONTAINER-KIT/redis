@@ -17,9 +17,12 @@ RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash op
 WORKDIR /tmp
 
 RUN curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
-    tar xvzf redis-${REDIS_VERSION}.tar.gz && \
-    make -C redis-${REDIS_VERSION} && \
-    make -C redis-${REDIS_VERSION} install BUILD_TLS=yes
+    tar xvzf redis-${REDIS_VERSION}.tar.gz
+
+WORKDIR /tmp/redis-${REDIS_VERSION}
+
+RUN make && \
+    make install BUILD_TLS=yes
 
 FROM alpine:3.15
 
