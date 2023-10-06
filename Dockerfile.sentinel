@@ -12,12 +12,12 @@ ARG REDIS_SENTINEL_VERSION="stable"
 
 RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash openssl-dev
 
-RUN curl -fL -Lo /tmp/redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
-    cd /tmp && \
+WORKDIR /tmp
+
+RUN curl -fL -Lo redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
     tar xvzf redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
-    cd redis-${REDIS_SENTINEL_VERSION} && \
-    make && \
-    make install BUILD_TLS=yes
+    make -C redis-${REDIS_SENTINEL_VERSION} && \
+    make -C redis-${REDIS_SENTINEL_VERSION} install BUILD_TLS=yes
 
 FROM alpine:3.15
 
