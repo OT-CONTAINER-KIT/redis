@@ -2,4 +2,4 @@
 
 PODS="$1"
 
-yes yes | redis-cli --cluster create ${PODS}
+yes yes | redis-cli --cluster create "${PODS}"
