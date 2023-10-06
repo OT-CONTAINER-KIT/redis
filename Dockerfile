@@ -27,9 +27,9 @@ LABEL maintainer="Opstree Solutions"
 
 ARG TARGETARCH
 
-LABEL VERSION=1.0 \
-      ARCH=$TARGETARCH \
-      DESCRIPTION="A production grade performance tuned redis docker image created by Opstree Solutions"
+LABEL version=1.0 \
+      arch=$TARGETARCH \
+      description="A production grade performance tuned redis docker image created by Opstree Solutions"
 
 COPY --from=builder /usr/local/bin/redis-server /usr/local/bin/redis-server
 COPY --from=builder /usr/local/bin/redis-cli /usr/local/bin/redis-cli
