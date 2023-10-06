@@ -1,6 +1,6 @@
 FROM alpine:3.15 as builder
 
-MAINTAINER Opstree Solutions
+LABEL maintainer="Opstree Solutions"
 
 ARG TARGETARCH
 
@@ -23,7 +23,7 @@ RUN curl -fL -Lo /tmp/redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-
 
 FROM alpine:3.15
 
-MAINTAINER Opstree Solutions
+LABEL maintainer="Opstree Solutions"
 
 ARG TARGETARCH
 
