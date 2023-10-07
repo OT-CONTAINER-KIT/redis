@@ -71,11 +71,8 @@ acl_setup(){
 }
 
 start_sentinel() {
-
   echo "Starting  sentinel service ....."
-    redis-sentinel /etc/redis/sentinel.conf
-  
-
+  exec redis-sentinel /etc/redis/sentinel.conf
 }
 
 main_function() {
