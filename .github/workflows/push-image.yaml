@@ -79,5 +79,5 @@ jobs:
           context: .
           file: Dockerfile.exporter
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
           tags: quay.io/opstree/redis-exporter:${{ env.REDIS_EXPORTER_VERSION }}
