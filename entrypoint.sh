@@ -99,6 +99,12 @@ persistence_setup() {
     fi
 }
 
+port_setup() {
+        {
+            echo port "${REDIS_PORT}"
+        } >> /etc/redis/redis.conf
+}
+
 external_config() {
     echo "include ${EXTERNAL_CONFIG_FILE}" >> /etc/redis/redis.conf
 }
@@ -139,6 +145,7 @@ main_function() {
     persistence_setup
     tls_setup
     acl_setup
+    port_setup
     if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
         external_config
     fi
