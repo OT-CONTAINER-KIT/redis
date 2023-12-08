@@ -30,6 +30,8 @@ LABEL maintainer="Opstree Solutions"
 
 ARG TARGETARCH
 
+ENV REDIS_PORT=6379
+
 LABEL version=1.0 \
       arch=$TARGETARCH \
       description="A production grade performance tuned redis docker image created by Opstree Solutions"
@@ -62,7 +64,7 @@ VOLUME ["/node-conf"]
 
 WORKDIR /data
 
-EXPOSE 6379
+EXPOSE ${REDIS_PORT}
 
 USER 1000
 
