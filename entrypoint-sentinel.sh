@@ -21,6 +21,9 @@ sentinel_mode_setup(){
     echo "sentinel down-after-milliseconds ${MASTER_GROUP_NAME} ${DOWN_AFTER_MILLISECONDS}"
     echo "sentinel parallel-syncs ${MASTER_GROUP_NAME} ${PARALLEL_SYNCS}"
     echo "sentinel failover-timeout ${MASTER_GROUP_NAME} ${FAILOVER_TIMEOUT}"
+    if [[ -n "${MASTER_PASSWORD}" ]];then
+      echo "sentinel auth-pass ${MASTER_GROUP_NAME} ${MASTER_PASSWORD}"
+    fi
   }>> /etc/redis/sentinel.conf
  
 }
