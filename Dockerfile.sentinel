@@ -23,6 +23,8 @@ FROM alpine:3.15
 
 ARG TARGETARCH
 
+ENV SENTINEL_PORT=26379
+
 LABEL version=1.0 \
       arch=$TARGETARCH \
       description="A production grade performance tuned redis docker image created by Opstree Solutions"
@@ -50,7 +52,7 @@ VOLUME ["/sentinel-data"]
 
 WORKDIR /sentinel-data
 
-EXPOSE 26379
+EXPOSE ${SENTINEL_PORT}
 
 USER 1000
 
