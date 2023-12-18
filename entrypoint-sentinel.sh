@@ -73,6 +73,12 @@ acl_setup(){
     fi
 }
 
+port_setup() {
+        {
+            echo port "${SENTINEL_PORT}"
+        } >> /etc/redis/sentinel.conf
+}
+
 start_sentinel() {
   echo "Starting  sentinel service ....."
   exec redis-sentinel /etc/redis/sentinel.conf
@@ -84,6 +90,7 @@ main_function() {
   sentinel_mode_setup
   tls_setup
   acl_setup
+  port_setup
   if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
     external_config
   fi
