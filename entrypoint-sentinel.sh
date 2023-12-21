@@ -21,6 +21,9 @@ sentinel_mode_setup(){
     echo "sentinel down-after-milliseconds ${MASTER_GROUP_NAME} ${DOWN_AFTER_MILLISECONDS}"
     echo "sentinel parallel-syncs ${MASTER_GROUP_NAME} ${PARALLEL_SYNCS}"
     echo "sentinel failover-timeout ${MASTER_GROUP_NAME} ${FAILOVER_TIMEOUT}"
+    if [[ -n "${MASTER_PASSWORD}" ]];then
+      echo "sentinel auth-pass ${MASTER_GROUP_NAME} ${MASTER_PASSWORD}"
+    fi
   }>> /etc/redis/sentinel.conf
  
 }
@@ -70,12 +73,15 @@ acl_setup(){
     fi
 }
 
+port_setup() {
+        {
+            echo port "${SENTINEL_PORT}"
+        } >> /etc/redis/sentinel.conf
+}
+
 start_sentinel() {
-
   echo "Starting  sentinel service ....."
-    redis-sentinel /etc/redis/sentinel.conf
-  
-
+  exec redis-sentinel /etc/redis/sentinel.conf
 }
 
 main_function() {
@@ -84,6 +90,7 @@ main_function() {
   sentinel_mode_setup
   tls_setup
   acl_setup
+  port_setup
   if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
     external_config
   fi

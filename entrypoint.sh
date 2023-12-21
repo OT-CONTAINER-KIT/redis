@@ -99,6 +99,12 @@ persistence_setup() {
     fi
 }
 
+port_setup() {
+        {
+            echo port "${REDIS_PORT}"
+        } >> /etc/redis/redis.conf
+}
+
 external_config() {
     echo "include ${EXTERNAL_CONFIG_FILE}" >> /etc/redis/redis.conf
 }
@@ -107,21 +113,28 @@ start_redis() {
     if [[ "${SETUP_MODE}" == "cluster" ]]; then
         echo "Starting redis service in cluster mode....."
         if [[ "${NODEPORT}" == "true" ]]; then
-            CLUSTER_ANNOUNCE_IP="node-ip-$(hostname)"
+            CLUSTER_ANNOUNCE_IP_VAR="node_ip_$(hostname | tr '-' '_')"
+            CLUSTER_ANNOUNCE_IP="${!CLUSTER_ANNOUNCE_IP_VAR}"
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
-
+        
         if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
-          redis-server /etc/redis/redis.conf \
+          exec redis-server /etc/redis/redis.conf \
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}" \
           --cluster-announce-hostname "${POD_HOSTNAME}"
         else
-          redis-server /etc/redis/redis.conf
+          {
+            echo cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
+            echo cluster-announce-hostname "${POD_HOSTNAME}"
+          } >> /etc/redis/redis.conf
+
+          exec redis-server /etc/redis/redis.conf
         fi
+
     else
         echo "Starting redis service in standalone mode....."
-        redis-server /etc/redis/redis.conf
+        exec redis-server /etc/redis/redis.conf
     fi
 }
 
@@ -132,6 +145,7 @@ main_function() {
     persistence_setup
     tls_setup
     acl_setup
+    port_setup
     if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
         external_config
     fi

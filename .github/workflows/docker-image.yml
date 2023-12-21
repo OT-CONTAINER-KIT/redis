@@ -9,6 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - uses: hadolint/hadolint-action@v3.1.0
+      name: Lint Dockerfile
+      with:
+        dockerfile: Dockerfile
+        ignore: DL3007,DL3018
+
     - name: Build Dockerfile
       run: docker build . --file Dockerfile --tag redis:$(date +%s)
 
@@ -16,6 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - uses: hadolint/hadolint-action@v3.1.0
+      name: Lint Dockerfile.exporter
+      with:
+        dockerfile: Dockerfile.exporter
+        ignore: DL3007,DL3018
+
     - name: Build Dockerfile.exporter
       run: docker build . --file Dockerfile.exporter --tag redis-exporter:$(date +%s)
 
@@ -23,5 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - uses: hadolint/hadolint-action@v3.1.0
+      name: Lint Dockerfile.sentinel
+      with:
+        dockerfile: Dockerfile.sentinel
+        ignore: DL3007,DL3018
+
     - name: Build Dockerfile.sentinel
       run: docker build . --file Dockerfile.sentinel --tag redis-sentinel:$(date +%s)
