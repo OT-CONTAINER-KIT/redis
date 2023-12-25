@@ -103,6 +103,13 @@ port_setup() {
         {
             echo port "${REDIS_PORT}"
         } >> /etc/redis/redis.conf
+
+        if [[ "${NODEPORT}" == "true" ]]; then
+            {
+                echo cluster-announce-port "${CLUSTER_ANNOUNCE_PORT}"
+                echo cluster-announce-bus-port "${CLUSTER_ANNOUNCE_BUS_PORT}"
+            } >> /etc/redis/redis.conf
+        fi
 }
 
 external_config() {
