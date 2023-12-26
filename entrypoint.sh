@@ -105,6 +105,10 @@ port_setup() {
         } >> /etc/redis/redis.conf
 
         if [[ "${NODEPORT}" == "true" ]]; then
+            CLUSTER_ANNOUNCE_PORT_VAR="announce_port_$(hostname | tr '-' '_')"
+            CLUSTER_ANNOUNCE_BUS_PORT_VAR="announce_bus_port_$(hostname | tr '-' '_')"
+            CLUSTER_ANNOUNCE_PORT="${!CLUSTER_ANNOUNCE_PORT_VAR}"
+            CLUSTER_ANNOUNCE_BUS_PORT="${!CLUSTER_ANNOUNCE_BUS_PORT_VAR}"
             {
                 echo cluster-announce-port "${CLUSTER_ANNOUNCE_PORT}"
                 echo cluster-announce-bus-port "${CLUSTER_ANNOUNCE_BUS_PORT}"
