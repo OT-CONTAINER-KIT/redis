@@ -10,13 +10,13 @@ LABEL version=1.0 \
 
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
 
-ARG REDIS_VERSION="stable"
+ARG REDIS_VERSION="6.2.14"
 
 RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash openssl-dev
 
 WORKDIR /tmp
 
-RUN curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
+RUN curl -L https://github.com/redis/redis/archive/refs/tags/6.2.14.tar.gz -o redis-${REDIS_VERSION}.tar.gz && \
     tar xvzf redis-${REDIS_VERSION}.tar.gz
 
 WORKDIR /tmp/redis-${REDIS_VERSION}
