@@ -14,7 +14,14 @@ RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash op
 
 WORKDIR /tmp
 
-RUN curl -fL -Lo redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
+RUN if [ "${REDIS_SENTINEL_VERSION}" = "stable" ]; then \
+        curl -fL -Lo redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-stable.tar.gz; \
+    else \
+        if [ "${REDIS_VERSION:0:1}" = "v" ]; then \
+            REDIS_VERSION=${REDIS_VERSION:1}; \
+        fi; \
+        curl -fL -Lo redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/releases/redis-${REDIS_SENTINEL_VERSION}.tar.gz; \
+    fi && \
     tar xvzf redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
     make -C redis-${REDIS_SENTINEL_VERSION} && \
     make -C redis-${REDIS_SENTINEL_VERSION} install BUILD_TLS=yes
