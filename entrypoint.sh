@@ -52,8 +52,6 @@ redis_mode_setup() {
 tls_setup() {
     if [[ "${TLS_MODE}" == "true" ]]; then
         {
-            echo port 0
-            echo tls-port 6379
             echo tls-cert-file "${REDIS_TLS_CERT}"
             echo tls-key-file "${REDIS_TLS_CERT_KEY}"
             echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
@@ -100,9 +98,16 @@ persistence_setup() {
 }
 
 port_setup() {
-        {
-            echo port "${REDIS_PORT}"
-        } >> /etc/redis/redis.conf
+        if [[ "${TLS_MODE}" == "true" ]]; then
+            {
+                echo port 0
+                echo tls-port "${REDIS_PORT}"
+            } >> /etc/redis/redis.conf
+        else
+            {
+                echo port "${REDIS_PORT}"
+            } >> /etc/redis/redis.conf
+        fi
 
         if [[ "${NODEPORT}" == "true" ]]; then
             CLUSTER_ANNOUNCE_PORT_VAR="announce_port_$(hostname | tr '-' '_')"
