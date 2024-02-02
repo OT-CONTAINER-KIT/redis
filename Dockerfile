@@ -21,8 +21,14 @@ RUN curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${RED
 
 WORKDIR /tmp/redis-${REDIS_VERSION}
 
-RUN make && \
-    make install BUILD_TLS=yes
+RUN arch="$(uname -m)"; \
+    extraJemallocConfigureFlags="--with-lg-page=16"; \
+    if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then \
+        sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${REDIS_VERSION}/deps/Makefile; \
+    fi; \
+    export BUILD_TLS=yes; \
+    make all; \
+    make install
 
 FROM alpine:3.15
 
