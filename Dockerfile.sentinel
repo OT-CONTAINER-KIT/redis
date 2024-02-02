@@ -16,8 +16,14 @@ WORKDIR /tmp
 
 RUN curl -fL -Lo redis-${REDIS_SENTINEL_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
     tar xvzf redis-${REDIS_SENTINEL_VERSION}.tar.gz && \
-    make -C redis-${REDIS_SENTINEL_VERSION} && \
-    make -C redis-${REDIS_SENTINEL_VERSION} install BUILD_TLS=yes
+    arch="$(uname -m)"; \
+    extraJemallocConfigureFlags="--with-lg-page=16"; \
+    if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then \
+      sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${REDIS_SENTINEL_VERSION}/deps/Makefile; \
+    fi; \
+    export BUILD_TLS=yes; \
+    make -C redis-${REDIS_SENTINEL_VERSION} all; \
+    make -C redis-${REDIS_SENTINEL_VERSION} install
 
 FROM alpine:3.15
 
