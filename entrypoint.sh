@@ -57,11 +57,11 @@ tls_setup() {
             echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
             # echo tls-prefer-server-ciphers yes
             echo tls-auth-clients optional
+            echo tls-replication yes
         } >> /etc/redis/redis.conf
 
         if [[ "${SETUP_MODE}" == "cluster" ]]; then
             {
-                echo tls-replication yes
                 echo tls-cluster yes
                 echo cluster-preferred-endpoint-type hostname
             } >> /etc/redis/redis.conf
