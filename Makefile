@@ -1,3 +1,4 @@
+CONTAINER_ENGINE ?= docker
 REDIS_VERSION ?= v7.0.13
 SENTINEL_VERSION ?= v7.0.13
 EXPORTER_VERSION ?= v1.48.0
@@ -7,22 +8,22 @@ EXPORTER_IMG ?= quay.io/opstree/redis-exporter:$(EXPORTER_VERSION)
 SENTINEL_IMG ?= quay.io/opstree/redis-sentinel:$(SENTINEL_VERSION)
 
 build-redis:
-	docker build -t ${IMG} -f Dockerfile .
+	${CONTAINER_ENGINE} build -t ${IMG} -f Dockerfile .
 
 push-redis:
-	docker push ${IMG}
+	${CONTAINER_ENGINE} push ${IMG}
 
 build-redis-exporter:
-	docker build -t ${EXPORTER_IMG} -f Dockerfile.exporter .
+	${CONTAINER_ENGINE} build -t ${EXPORTER_IMG} -f Dockerfile.exporter .
 
 push-redis-exporter:
-	docker push ${EXPORTER_IMG}
+	${CONTAINER_ENGINE} push ${EXPORTER_IMG}
 
 build-sentinel :
-	docker build -t ${SENTINEL_IMG} -f Dockerfile.sentinel .
+	${CONTAINER_ENGINE} build -t ${SENTINEL_IMG} -f Dockerfile.sentinel .
 
 push-sentinel :
-	docker push ${SENTINEL_IMG}
+	${CONTAINER_ENGINE} push ${SENTINEL_IMG}
 
 setup-standalone-server-compose:
 	docker-compose -f docker-compose-standalone.yaml up -d
