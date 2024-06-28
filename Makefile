@@ -1,26 +1,26 @@
 CONTAINER_ENGINE ?= docker
 REDIS_VERSION ?= v7.0.13
-SENTINEL_VERSION ?= v7.0.13
-EXPORTER_VERSION ?= v1.48.0
+REDIS_SENTINEL_VERSION ?= v7.0.13
+REDIS_EXPORTER_VERSION ?= v1.48.0
 
 IMG ?= quay.io/opstree/redis:$(REDIS_VERSION)
-EXPORTER_IMG ?= quay.io/opstree/redis-exporter:$(EXPORTER_VERSION)
-SENTINEL_IMG ?= quay.io/opstree/redis-sentinel:$(SENTINEL_VERSION)
+EXPORTER_IMG ?= quay.io/opstree/redis-exporter:$(REDIS_EXPORTER_VERSION)
+SENTINEL_IMG ?= quay.io/opstree/redis-sentinel:$(REDIS_SENTINEL_VERSION)
 
 build-redis:
-	${CONTAINER_ENGINE} build -t ${IMG} -f Dockerfile .
+	${CONTAINER_ENGINE} build -t ${IMG} -f Dockerfile --build-arg REDIS_VERSION=${REDIS_VERSION} .
 
 push-redis:
 	${CONTAINER_ENGINE} push ${IMG}
 
 build-redis-exporter:
-	${CONTAINER_ENGINE} build -t ${EXPORTER_IMG} -f Dockerfile.exporter .
+	${CONTAINER_ENGINE} build -t ${EXPORTER_IMG} -f Dockerfile.exporter --build-arg REDIS_EXPORTER_VERSION=${REDIS_EXPORTER_VERSION} .
 
 push-redis-exporter:
 	${CONTAINER_ENGINE} push ${EXPORTER_IMG}
 
 build-sentinel :
-	${CONTAINER_ENGINE} build -t ${SENTINEL_IMG} -f Dockerfile.sentinel .
+	${CONTAINER_ENGINE} build -t ${SENTINEL_IMG} -f Dockerfile.sentinel --build-arg REDIS_SENTINEL_VERSION=${REDIS_SENTINEL_VERSION} .
 
 push-sentinel :
 	${CONTAINER_ENGINE} push ${SENTINEL_IMG}
