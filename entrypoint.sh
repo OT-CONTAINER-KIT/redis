@@ -63,8 +63,13 @@ tls_setup() {
             {
                 echo tls-replication yes
                 echo tls-cluster yes
-                echo cluster-preferred-endpoint-type hostname
             } >> /etc/redis/redis.conf
+
+            if [[ "${REDIS_MAJOR_VERSION}" == "v7" ]]; then
+                {
+                    echo cluster-preferred-endpoint-type hostname
+                } >> /etc/redis/redis.conf
+            fi
         fi
     else
         echo "Running without TLS mode"
