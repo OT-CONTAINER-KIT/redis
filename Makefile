@@ -33,3 +33,24 @@ setup-cluster-compose:
 	docker-compose exec redis-slave-1 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
 	docker-compose exec redis-slave-2 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
 	docker-compose exec redis-slave-3 /bin/bash -c "/usr/bin/setupMasterSlave.sh"
+
+docker-create:
+	docker buildx create --platform "linux/amd64,linux/arm64" --use
+
+docker-build-redis:
+	docker buildx build --platform="linux/arm64,linux/amd64" -t ${IMG} -f Dockerfile .
+
+docker-push-redis:
+	docker buildx build --push --platform="linux/arm64,linux/amd64" -t ${IMG} -f Dockerfile .
+
+docker-build-redis-sentinel:
+	docker buildx build --platform="linux/arm64,linux/amd64" -t ${SENTINEL_IMG} -f Dockerfile.sentinel .
+
+docker-push-redis-sentinel:
+	docker buildx build --push --platform="linux/arm64,linux/amd64" -t ${SENTINEL_IMG} -f Dockerfile.sentinel .
+
+docker-build-exporter:
+	docker buildx build --platform="linux/arm64,linux/amd64" -t ${EXPORTER_IMG} -f Dockerfile.exporter .
+
+docker-push-exporter:
+	docker buildx build --push --platform="linux/arm64,linux/amd64" -t ${EXPORTER_IMG} -f Dockerfile.exporter .
