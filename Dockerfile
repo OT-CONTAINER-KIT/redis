@@ -14,20 +14,20 @@ RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash op
 
 WORKDIR /tmp
 
-RUN REDIS_VERSION=$(echo ${REDIS_VERSION} | sed 's/^v//'); \
-    case "${REDIS_VERSION}" in \
-       latest | stable) REDIS_DOWNLOAD_URL="http://download.redis.io/redis-stable.tar.gz";; \
-       *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz";; \
+RUN VERSION=$(echo ${REDIS_VERSION} | sed -e "s/^v//g"); \
+    case "${VERSION}" in \
+       latest | stable) REDIS_DOWNLOAD_URL="http://download.redis.io/redis-stable.tar.gz" && VERSION="stable";; \
+       *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${VERSION}.tar.gz";; \
     esac; \
-    curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}; \
-    tar xvzf redis-${REDIS_VERSION}.tar.gz
+    curl -fL -Lo redis-${VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}; \
+    tar xvzf redis-${VERSION}.tar.gz
 
-WORKDIR /tmp/redis-${REDIS_VERSION}
+WORKDIR /tmp/redis-${VERSION}
 
 RUN arch="$(uname -m)"; \
     extraJemallocConfigureFlags="--with-lg-page=16"; \
     if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then \
-        sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${REDIS_VERSION}/deps/Makefile; \
+        sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${VERSION}/deps/Makefile; \
     fi; \
     export BUILD_TLS=yes; \
     make all; \
