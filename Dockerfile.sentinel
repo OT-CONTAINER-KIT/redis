@@ -19,11 +19,9 @@ RUN VERSION=$(echo ${REDIS_SENTINEL_VERSION} | sed -e "s/^v//g"); \
     esac; \
     \
     curl -fL -Lo redis-${VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}; \
-    tar xvzf redis-${VERSION}.tar.gz
-
-WORKDIR /tmp
-
-RUN arch="$(uname -m)"; \
+    tar xvzf redis-${VERSION}.tar.gz; \
+    \
+    arch="$(uname -m)"; \
     extraJemallocConfigureFlags="--with-lg-page=16"; \
     if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then \
       sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${VERSION}/deps/Makefile; \

@@ -20,18 +20,16 @@ RUN VERSION=$(echo ${REDIS_VERSION} | sed -e "s/^v//g"); \
        *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${VERSION}.tar.gz";; \
     esac; \
     curl -fL -Lo redis-${VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}; \
-    tar xvzf redis-${VERSION}.tar.gz
-
-WORKDIR /tmp/redis-${VERSION}
-
-RUN arch="$(uname -m)"; \
+    tar xvzf redis-${VERSION}.tar.gz; \
+    \
+    arch="$(uname -m)"; \
     extraJemallocConfigureFlags="--with-lg-page=16"; \
     if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then \
         sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${VERSION}/deps/Makefile; \
     fi; \
     export BUILD_TLS=yes; \
-    make all; \
-    make install
+    make -C redis-${VERSION} all; \
+    make -C redis-${VERSION} install
 
 FROM alpine:3.15
 
