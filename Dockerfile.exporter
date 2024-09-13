@@ -8,10 +8,11 @@ ARG REDIS_EXPORTER_VERSION="1.48.0"
 
 WORKDIR /tmp
 
-RUN apk add --no-cache curl ca-certificates && \
+RUN REDIS_EXPORTER_VERSION=$(echo ${REDIS_EXPORTER_VERSION} | sed 's/^v//'); \
+    apk add --no-cache curl ca-certificates; \
     curl -fL -Lo redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-$TARGETARCH.tar.gz \
-    ${EXPORTER_URL}/v${REDIS_EXPORTER_VERSION}/redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-$TARGETARCH.tar.gz && \
-    tar -xvzf redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-$TARGETARCH.tar.gz && \
+    ${EXPORTER_URL}/v${REDIS_EXPORTER_VERSION}/redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-$TARGETARCH.tar.gz; \
+    tar -xvzf redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-$TARGETARCH.tar.gz; \
     mv redis_exporter-v${REDIS_EXPORTER_VERSION}.linux-$TARGETARCH redis_exporter
 
 FROM scratch

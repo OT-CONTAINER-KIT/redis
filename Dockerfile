@@ -8,15 +8,18 @@ LABEL version=1.0 \
       arch=$TARGETARCH \
       description="A production grade performance tuned redis docker image created by Opstree Solutions"
 
-ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
-
 ARG REDIS_VERSION="stable"
 
 RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash openssl-dev
 
 WORKDIR /tmp
 
-RUN curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
+RUN REDIS_VERSION=$(echo ${REDIS_VERSION} | sed 's/^v//'); \
+    case "${REDIS_VERSION}" in \
+       latest | stable) REDIS_DOWNLOAD_URL="http://download.redis.io";; \
+       *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases";; \
+    esac; \
+    curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz; \
     tar xvzf redis-${REDIS_VERSION}.tar.gz
 
 WORKDIR /tmp/redis-${REDIS_VERSION}
