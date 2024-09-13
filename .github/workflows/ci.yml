@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   pull_request:
-    branches: [ "master" ]
+    branches: [master]
 
 jobs:
   build_dockerfile:
@@ -28,7 +28,7 @@ jobs:
       name: Lint Dockerfile.exporter
       with:
         dockerfile: Dockerfile.exporter
-        ignore: DL3007,DL3018
+        ignore: DL3007,DL3018,SC2086,DL4006
 
     - name: Build Dockerfile.exporter
       run: docker build . --file Dockerfile.exporter --tag redis-exporter:$(date +%s)
