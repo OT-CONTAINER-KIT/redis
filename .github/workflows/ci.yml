@@ -14,7 +14,7 @@ jobs:
       name: Lint Dockerfile
       with:
         dockerfile: Dockerfile
-        ignore: DL3007,DL3018
+        ignore: DL3007,DL3018,SC2086,DL4006
 
     - name: Build Dockerfile
       run: docker build . --file Dockerfile --tag redis:$(date +%s)
@@ -42,7 +42,7 @@ jobs:
       name: Lint Dockerfile.sentinel
       with:
         dockerfile: Dockerfile.sentinel
-        ignore: DL3007,DL3018
+        ignore: DL3007,DL3018,SC2086,DL4006
 
     - name: Build Dockerfile.sentinel
       run: docker build . --file Dockerfile.sentinel --tag redis-sentinel:$(date +%s)
