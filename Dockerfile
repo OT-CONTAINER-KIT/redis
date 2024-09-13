@@ -16,10 +16,10 @@ WORKDIR /tmp
 
 RUN REDIS_VERSION=$(echo ${REDIS_VERSION} | sed 's/^v//'); \
     case "${REDIS_VERSION}" in \
-       latest | stable) REDIS_DOWNLOAD_URL="http://download.redis.io";; \
-       *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases";; \
+       latest | stable) REDIS_DOWNLOAD_URL="http://download.redis.io/redis-stable.tar.gz";; \
+       *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz";; \
     esac; \
-    curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz; \
+    curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}; \
     tar xvzf redis-${REDIS_VERSION}.tar.gz
 
 WORKDIR /tmp/redis-${REDIS_VERSION}
