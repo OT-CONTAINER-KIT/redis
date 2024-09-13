@@ -36,7 +36,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            REDIS_VERSION: ${{ matrix.version }}
+            REDIS_VERSION=${{ matrix.version }}
           tags: quay.io/opstree/redis:${{ matrix.version }}
 
   build_redis_sentinel:
@@ -65,7 +65,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            REDIS_SENTINEL_VERSION: ${{ matrix.version }}
+            REDIS_SENTINEL_VERSION=${{ matrix.version }}
           tags: quay.io/opstree/redis-sentinel:${{ matrix.version }}
 
   build_redis_exporter:
@@ -94,5 +94,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            REDIS_EXPORTER_VERSION: ${{ matrix.version }}
+            REDIS_EXPORTER_VERSION=${{ matrix.version }}
           tags: quay.io/opstree/redis-exporter:${{ matrix.version }}
