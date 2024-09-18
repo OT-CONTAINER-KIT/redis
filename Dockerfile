@@ -1,4 +1,4 @@
-FROM alpine:3.15 as builder
+FROM alpine:3.19 as builder
 
 LABEL maintainer="Opstree Solutions"
 
@@ -31,7 +31,7 @@ RUN VERSION=$(echo ${REDIS_VERSION} | sed -e "s/^v//g"); \
     make -C redis-${VERSION} all; \
     make -C redis-${VERSION} install
 
-FROM alpine:3.15
+FROM alpine:3.19
 
 LABEL maintainer="Opstree Solutions"
 
@@ -45,6 +45,8 @@ LABEL version=1.0 \
 
 COPY --from=builder /usr/local/bin/redis-server /usr/local/bin/redis-server
 COPY --from=builder /usr/local/bin/redis-cli /usr/local/bin/redis-cli
+
+RUN apk update && apk upgrade
 
 RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 1000 redis && \
     apk add --no-cache bash
