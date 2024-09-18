@@ -59,12 +59,20 @@ tls_setup() {
             echo tls-auth-clients optional
         } >> /etc/redis/redis.conf
 
+        {
+            echo tls-replication yes
+        } >> /etc/redis/redis.conf
+
         if [[ "${SETUP_MODE}" == "cluster" ]]; then
             {
-                echo tls-replication yes
                 echo tls-cluster yes
-                echo cluster-preferred-endpoint-type hostname
             } >> /etc/redis/redis.conf
+
+            if [[ "${REDIS_MAJOR_VERSION}" == "v7" ]]; then
+                {
+                    echo cluster-preferred-endpoint-type hostname
+                } >> /etc/redis/redis.conf
+            fi
         fi
     else
         echo "Running without TLS mode"

@@ -85,12 +85,11 @@ start_sentinel() {
 }
 
 main_function() {
-
   set_sentinel_password
   sentinel_mode_setup
-  tls_setup
-  acl_setup
   port_setup
+  acl_setup
+  tls_setup
   if [[ -f "${EXTERNAL_CONFIG_FILE}" ]]; then
     external_config
   fi

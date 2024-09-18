@@ -1,4 +1,4 @@
-name: Docker
+name: Docker Image CD
 
 on:
   push:
@@ -11,6 +11,9 @@ env:
 
 jobs:
   build_redis:
+    strategy:
+      matrix:
+        version: [v6.2.14, v7.0.15, latest]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,9 +35,14 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/opstree/redis:${{ env.REDIS_VERSION }}
+          build-args: |
+            REDIS_VERSION=${{ matrix.version }}
+          tags: quay.io/opstree/redis:${{ matrix.version }}
 
   build_redis_sentinel:
+    strategy:
+      matrix:
+        version: [v6.2.14, v7.0.15, latest]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -56,9 +64,14 @@ jobs:
           file: Dockerfile.sentinel
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/opstree/redis-sentinel:${{ env.REDIS_SENTINEL_VERSION }}
+          build-args: |
+            REDIS_SENTINEL_VERSION=${{ matrix.version }}
+          tags: quay.io/opstree/redis-sentinel:${{ matrix.version }}
 
   build_redis_exporter:
+    strategy:
+      matrix:
+        version: [v1.48.0]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -80,4 +93,6 @@ jobs:
           file: Dockerfile.exporter
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/opstree/redis-exporter:${{ env.REDIS_EXPORTER_VERSION }}
+          build-args: |
+            REDIS_EXPORTER_VERSION=${{ matrix.version }}
+          tags: quay.io/opstree/redis-exporter:${{ matrix.version }}

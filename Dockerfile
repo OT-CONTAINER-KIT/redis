@@ -8,27 +8,28 @@ LABEL version=1.0 \
       arch=$TARGETARCH \
       description="A production grade performance tuned redis docker image created by Opstree Solutions"
 
-ARG REDIS_DOWNLOAD_URL="http://download.redis.io/"
-
 ARG REDIS_VERSION="stable"
 
 RUN apk add --no-cache su-exec tzdata make curl build-base linux-headers bash openssl-dev
 
 WORKDIR /tmp
 
-RUN curl -fL -Lo redis-${REDIS_VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}/redis-${REDIS_VERSION}.tar.gz && \
-    tar xvzf redis-${REDIS_VERSION}.tar.gz
-
-WORKDIR /tmp/redis-${REDIS_VERSION}
-
-RUN arch="$(uname -m)"; \
+RUN VERSION=$(echo ${REDIS_VERSION} | sed -e "s/^v//g"); \
+    case "${VERSION}" in \
+       latest | stable) REDIS_DOWNLOAD_URL="http://download.redis.io/redis-stable.tar.gz" && VERSION="stable";; \
+       *) REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${VERSION}.tar.gz";; \
+    esac; \
+    curl -fL -Lo redis-${VERSION}.tar.gz ${REDIS_DOWNLOAD_URL}; \
+    tar xvzf redis-${VERSION}.tar.gz; \
+    \
+    arch="$(uname -m)"; \
     extraJemallocConfigureFlags="--with-lg-page=16"; \
     if [ "$arch" = "aarch64" ] || [ "$arch" = "arm64" ]; then \
-        sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${REDIS_VERSION}/deps/Makefile; \
+        sed -ri 's!cd jemalloc && ./configure !&'"$extraJemallocConfigureFlags"' !' /tmp/redis-${VERSION}/deps/Makefile; \
     fi; \
     export BUILD_TLS=yes; \
-    make all; \
-    make install
+    make -C redis-${VERSION} all; \
+    make -C redis-${VERSION} install
 
 FROM alpine:3.19
 
