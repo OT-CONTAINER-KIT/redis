@@ -59,9 +59,12 @@ tls_setup() {
             echo tls-auth-clients optional
         } >> /etc/redis/redis.conf
 
+        {
+            echo tls-replication yes
+        } >> /etc/redis/redis.conf
+
         if [[ "${SETUP_MODE}" == "cluster" ]]; then
             {
-                echo tls-replication yes
                 echo tls-cluster yes
             } >> /etc/redis/redis.conf
 
