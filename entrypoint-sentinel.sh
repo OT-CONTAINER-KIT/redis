@@ -24,6 +24,9 @@ sentinel_mode_setup(){
     if [[ -n "${MASTER_PASSWORD}" ]];then
       echo "sentinel auth-pass ${MASTER_GROUP_NAME} ${MASTER_PASSWORD}"
     fi
+    if [[ -n "${SENTINEL_ID}" ]];then
+      (echo -n "sentinel myid "; echo "${SENTINEL_ID}" | sha1sum | awk '{ print $1 }')
+    fi
   }>> /etc/redis/sentinel.conf
  
 }
