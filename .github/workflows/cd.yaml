@@ -13,7 +13,7 @@ jobs:
   build_redis:
     strategy:
       matrix:
-        version: [v6.2.5, v6.2.14, v7.0.15, latest]
+        version: [v6.2.14, v7.0.15, v7.2.6, latest]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,7 +42,7 @@ jobs:
   build_redis_sentinel:
     strategy:
       matrix:
-        version: [v6.2.5, v6.2.14, v7.0.15, latest]
+        version: [v6.2.14, v7.0.15, v7.2.6, latest]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
