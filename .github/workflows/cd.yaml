@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         version: [latest]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,7 +43,7 @@ jobs:
     strategy:
       matrix:
         version: [latest]
-    runs-on: ubuntu-latest
+      runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
     strategy:
       matrix:
         version: [v1.48.0]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
