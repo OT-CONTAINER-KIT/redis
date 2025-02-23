@@ -13,6 +13,8 @@ EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-s
 DOWN_AFTER_MILLISECONDS=${DOWN_AFTER_MILLISECONDS:-30000}
 PARALLEL_SYNCS=${PARALLEL_SYNCS:-1}
 FAILOVER_TIMEOUT=${FAILOVER_TIMEOUT:-180000}
+RESOLVE_HOSTNAMES=${RESOLVE_HOSTNAMES:-no}
+ANNOUNCE_HOSTNAMES=${ANNOUNCE_HOSTNAMES:-no}
 
 
 sentinel_mode_setup(){
@@ -21,6 +23,8 @@ sentinel_mode_setup(){
     echo "sentinel down-after-milliseconds ${MASTER_GROUP_NAME} ${DOWN_AFTER_MILLISECONDS}"
     echo "sentinel parallel-syncs ${MASTER_GROUP_NAME} ${PARALLEL_SYNCS}"
     echo "sentinel failover-timeout ${MASTER_GROUP_NAME} ${FAILOVER_TIMEOUT}"
+    echo "SENTINEL resolve-hostnames ${RESOLVE_HOSTNAMES}"
+    echo "SENTINEL announce-hostnames ${ANNOUNCE_HOSTNAMES}"
     if [[ -n "${MASTER_PASSWORD}" ]];then
       echo "sentinel auth-pass ${MASTER_GROUP_NAME} ${MASTER_PASSWORD}"
     fi
