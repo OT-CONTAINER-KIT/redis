@@ -25,6 +25,9 @@ sentinel_mode_setup(){
     echo "sentinel failover-timeout ${MASTER_GROUP_NAME} ${FAILOVER_TIMEOUT}"
     echo "SENTINEL resolve-hostnames ${RESOLVE_HOSTNAMES}"
     echo "SENTINEL announce-hostnames ${ANNOUNCE_HOSTNAMES}"
+    if [[ "${ANNOUNCE_HOSTNAMES}" == "yes" && "${RESOLVE_HOSTNAMES}" == "yes" ]]; then
+      echo "sentinel announce-ip ${IP}"
+    fi
     if [[ -n "${MASTER_PASSWORD}" ]];then
       echo "sentinel auth-pass ${MASTER_GROUP_NAME} ${MASTER_PASSWORD}"
     fi
