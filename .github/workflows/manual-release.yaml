@@ -62,4 +62,6 @@ jobs:
           push: true
           build-args: |
             ${{ steps.config.outputs.build_arg_name }}=${{ github.event.inputs.version }}
-          tags: quay.io/opstree/${{ steps.config.outputs.image_name }}:${{ github.event.inputs.version }} 
+          tags: |
+            quay.io/opstree/${{ steps.config.outputs.image_name }}:${{ github.event.inputs.version }}
+            quay.io/opstree/${{ steps.config.outputs.image_name }}:latest
