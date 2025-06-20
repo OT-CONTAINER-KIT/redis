@@ -31,8 +31,10 @@ sentinel_mode_setup(){
     if [[ -n "${SENTINEL_ID}" ]];then
       (echo -n "sentinel myid "; echo "${SENTINEL_ID}" | sha1sum | awk '{ print $1 }')
     fi
-  }>> /etc/redis/sentinel.conf
- 
+    for replica in $REDIS_REPLICAS; do
+      echo "sentinel known-replica $MASTER_GROUP_NAME $replica $PORT"
+    done
+  } >> /etc/redis/sentinel.conf
 }
 
 external_config() {
@@ -40,50 +42,48 @@ external_config() {
 }
 
 set_sentinel_password() {
-    if [[ -z "${REDIS_PASSWORD}" ]]; then
-        echo "Sentinel is running without password which is not recommended"
-        echo "protected-mode no" >> /etc/redis/sentinel.conf
-    else
-        {
-            echo masterauth "${REDIS_PASSWORD}"
-            echo requirepass "${REDIS_PASSWORD}"
-            echo protected-mode yes
-        } >> /etc/redis/sentinel.conf
-    fi
+  if [[ -z "${REDIS_PASSWORD}" ]]; then
+    echo "Sentinel is running without password which is not recommended"
+    echo "protected-mode no" >> /etc/redis/sentinel.conf
+  else
+    {
+      echo masterauth "${REDIS_PASSWORD}"
+      echo requirepass "${REDIS_PASSWORD}"
+      echo protected-mode yes
+    } >> /etc/redis/sentinel.conf
+  fi
 }
 
 tls_setup() {
-    if [[ "${TLS_MODE}" == "true" ]]; then
-        {
-            echo port 0
-            echo tls-port 26379
-            echo tls-cert-file "${REDIS_TLS_CERT}"
-            echo tls-key-file "${REDIS_TLS_CERT_KEY}"
-            echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
-            # echo tls-prefer-server-ciphers yes
-            echo tls-auth-clients optional
-        } >> /etc/redis/sentinel.conf
-
-    else
-        echo "Running sentinel without TLS mode"
-    fi
+  if [[ "${TLS_MODE}" == "true" ]]; then
+    {
+      echo port 0
+      echo tls-port 26379
+      echo tls-cert-file "${REDIS_TLS_CERT}"
+      echo tls-key-file "${REDIS_TLS_CERT_KEY}"
+      echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
+      # echo tls-prefer-server-ciphers yes
+      echo tls-auth-clients optional
+    } >> /etc/redis/sentinel.conf
+  else
+    echo "Running sentinel without TLS mode"
+  fi
 }
 
 acl_setup(){
-    if [[ "$ACL_MODE" == "true" ]]; then
-        {
-            echo aclfile /etc/redis/user.acl
-            } >> /etc/redis/sentinel.conf
-
-    else
-        echo "ACL_MODE is not true, skipping ACL file modification"
-    fi
+  if [[ "$ACL_MODE" == "true" ]]; then
+    {
+      echo aclfile /etc/redis/user.acl
+    } >> /etc/redis/sentinel.conf
+  else
+    echo "ACL_MODE is not true, skipping ACL file modification"
+  fi
 }
 
 port_setup() {
-        {
-            echo port "${SENTINEL_PORT}"
-        } >> /etc/redis/sentinel.conf
+  {
+    echo port "${SENTINEL_PORT}"
+  } >> /etc/redis/sentinel.conf
 }
 
 start_sentinel() {
