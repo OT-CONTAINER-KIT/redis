@@ -46,10 +46,8 @@ LABEL version=1.0 \
 COPY --from=builder /usr/local/bin/redis-server /usr/local/bin/redis-server
 COPY --from=builder /usr/local/bin/redis-cli /usr/local/bin/redis-cli
 
-RUN apk update && apk upgrade
-
 RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 1000 redis && \
-    apk add --no-cache bash
+    apk add --no-cache bash libstdc++ libssl3 libcrypto3
 
 COPY redis.conf /etc/redis/redis.conf
 
