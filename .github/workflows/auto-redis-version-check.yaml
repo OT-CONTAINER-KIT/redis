@@ -1,0 +1,138 @@
+name: Auto Redis Version Check
+
+on:
+  schedule:
+    # Run monthly on the 1st day at 2 AM UTC
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  check-redis-versions:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+
+      - name: Get Redis Latest Versions
+        id: redis-versions
+        run: |
+          echo "Fetching Redis latest 5 stable versions..."
+          redis_versions=$(curl -s "https://api.github.com/repos/redis/redis/releases?per_page=5" | \
+            jq -r '.[].tag_name' | \
+            grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sed 's/^/v/' | \
+            sort -V)
+          
+          echo "Redis latest versions:"
+          echo "$redis_versions"
+          
+          # Save to environment variable
+          echo "REDIS_VERSIONS<<EOF" >> $GITHUB_ENV
+          echo "$redis_versions" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Get Built Versions from Quay.io
+        id: built-versions
+        run: |
+          echo "Fetching built versions from Quay.io..."
+          built_versions=$(curl -s "https://quay.io/api/v1/repository/opstree/redis/tag/" | \
+            jq -r '.tags[].name' | \
+            grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sort -V)
+          
+          echo "Built versions:"
+          echo "$built_versions"
+          
+          # Save to environment variable
+          echo "BUILT_VERSIONS<<EOF" >> $GITHUB_ENV
+          echo "$built_versions" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Check for New Versions
+        id: check-versions
+        run: |
+          echo "Checking for new versions to build..."
+          
+          new_versions=""
+          while IFS= read -r version; do
+            if [[ -n "$version" ]]; then
+              if ! echo "$BUILT_VERSIONS" | grep -q "^$version$"; then
+                echo "Found new version: $version"
+                new_versions="$new_versions $version"
+              else
+                echo "Version $version already exists"
+              fi
+            fi
+          done <<< "$REDIS_VERSIONS"
+          
+          if [[ -n "$new_versions" ]]; then
+            echo "Versions to build:$new_versions"
+            echo "NEW_VERSIONS=$new_versions" >> $GITHUB_ENV
+            echo "HAS_NEW_VERSIONS=true" >> $GITHUB_ENV
+          else
+            echo "No new versions found"
+            echo "HAS_NEW_VERSIONS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Trigger Redis Builds
+        if: env.HAS_NEW_VERSIONS == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Starting to trigger builds..."
+          
+          for version in $NEW_VERSIONS; do
+            if [[ -n "$version" ]]; then
+              echo "Triggering build for version: $version"
+              
+              # Trigger Redis build
+              echo "Building Redis $version..."
+              gh workflow run manual-release.yaml \
+                -f component=redis \
+                -f version=$version
+              
+              # Trigger Redis Sentinel build
+              echo "Building Redis Sentinel $version..."
+              gh workflow run manual-release.yaml \
+                -f component=sentinel \
+                -f version=$version
+              
+              # Wait to avoid too frequent API calls
+              sleep 5
+            fi
+          done
+          
+          echo "All build tasks have been triggered"
+
+      - name: Summary
+        run: |
+          echo "## Redis Version Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "### Redis Latest Versions:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$REDIS_VERSIONS" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Built Versions:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$BUILT_VERSIONS" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "$HAS_NEW_VERSIONS" == "true" ]]; then
+            echo "### Triggered Builds for New Versions:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "$NEW_VERSIONS" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Result: No new versions found to build" >> $GITHUB_STEP_SUMMARY
+          fi
