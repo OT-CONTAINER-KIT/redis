@@ -16,6 +16,8 @@ on:
         required: true
         type: string
 
+run-name: "Building ${{ github.event.inputs.component }} ${{ github.event.inputs.version }}"
+
 jobs:
   build_and_push:
     runs-on: ubuntu-22.04
