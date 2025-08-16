@@ -42,6 +42,23 @@ jobs:
           echo "$redis_versions" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Get Redis Exporter Latest Versions
+        id: redis-exporter-versions
+        run: |
+          echo "Fetching Redis Exporter latest 5 stable versions..."
+          exporter_versions=$(curl -s "https://api.github.com/repos/oliver006/redis_exporter/releases?per_page=5" | \
+            jq -r '.[].tag_name' | \
+            grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sort -V)
+
+          echo "Redis Exporter latest versions:"
+          echo "$exporter_versions"
+
+          # Save to environment variable
+          echo "EXPORTER_VERSIONS<<EOF" >> $GITHUB_ENV
+          echo "$exporter_versions" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Get Built Versions from Quay.io
         id: built-versions
         run: |
@@ -57,6 +74,23 @@ jobs:
           # Save to environment variable
           echo "BUILT_VERSIONS<<EOF" >> $GITHUB_ENV
           echo "$built_versions" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Get Built Redis Exporter Versions from Quay.io
+        id: built-exporter-versions
+        run: |
+          echo "Fetching built Redis Exporter versions from Quay.io..."
+          built_exporter_versions=$(curl -s "https://quay.io/api/v1/repository/opstree/redis-exporter/tag/" | \
+            jq -r '.tags[].name' | \
+            grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sort -V)
+
+          echo "Built Redis Exporter versions:"
+          echo "$built_exporter_versions"
+
+          # Save to environment variable
+          echo "BUILT_EXPORTER_VERSIONS<<EOF" >> $GITHUB_ENV
+          echo "$built_exporter_versions" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Check for New Versions
@@ -83,6 +117,32 @@ jobs:
           else
             echo "No new versions found"
             echo "HAS_NEW_VERSIONS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Check for New Redis Exporter Versions
+        id: check-exporter-versions
+        run: |
+          echo "Checking for new Redis Exporter versions to build..."
+
+          new_exporter_versions=""
+          while IFS= read -r version; do
+            if [[ -n "$version" ]]; then
+              if ! echo "$BUILT_EXPORTER_VERSIONS" | grep -q "^$version$"; then
+                echo "Found new Redis Exporter version: $version"
+                new_exporter_versions="$new_exporter_versions $version"
+              else
+                echo "Redis Exporter version $version already exists"
+              fi
+            fi
+          done <<< "$EXPORTER_VERSIONS"
+
+          if [[ -n "$new_exporter_versions" ]]; then
+            echo "Redis Exporter versions to build:$new_exporter_versions"
+            echo "NEW_EXPORTER_VERSIONS=$new_exporter_versions" >> $GITHUB_ENV
+            echo "HAS_NEW_EXPORTER_VERSIONS=true" >> $GITHUB_ENV
+          else
+            echo "No new Redis Exporter versions found"
+            echo "HAS_NEW_EXPORTER_VERSIONS=false" >> $GITHUB_ENV
           fi
 
       - name: Trigger Redis Builds
@@ -115,6 +175,30 @@ jobs:
           
           echo "All build tasks have been triggered"
 
+      - name: Trigger Redis Exporter Builds
+        if: env.HAS_NEW_EXPORTER_VERSIONS == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Starting to trigger Redis Exporter builds..."
+
+          for version in $NEW_EXPORTER_VERSIONS; do
+            if [[ -n "$version" ]]; then
+              echo "Triggering build for Redis Exporter version: $version"
+
+              # Trigger Redis Exporter build
+              echo "Building Redis Exporter $version..."
+              gh workflow run manual-release.yaml \
+                -f component=exporter \
+                -f version=$version
+
+              # Wait to avoid too frequent API calls
+              sleep 5
+            fi
+          done
+
+          echo "All Redis Exporter build tasks have been triggered"
+
       - name: Summary
         run: |
           echo "## Redis Version Check Results" >> $GITHUB_STEP_SUMMARY
@@ -127,7 +211,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "$BUILT_VERSIONS" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "$HAS_NEW_VERSIONS" == "true" ]]; then
             echo "### Triggered Builds for New Versions:" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
@@ -135,4 +219,25 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
             echo "### Result: No new versions found to build" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Redis Exporter Version Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "### Redis Exporter Latest Versions:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$EXPORTER_VERSIONS" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          echo "### Built Redis Exporter Versions:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$BUILT_EXPORTER_VERSIONS" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          if [[ "$HAS_NEW_EXPORTER_VERSIONS" == "true" ]]; then
+            echo "### Triggered Redis Exporter Builds for New Versions:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "$NEW_EXPORTER_VERSIONS" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Result: No new Redis Exporter versions found to build" >> $GITHUB_STEP_SUMMARY
           fi
