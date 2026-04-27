@@ -54,7 +54,7 @@ tls_setup() {
         {
             echo tls-cert-file "${REDIS_TLS_CERT}"
             echo tls-key-file "${REDIS_TLS_CERT_KEY}"
-            echo tls-ca-cert-file "${REDIS_TLS_CA_KEY}"
+            echo tls-ca-cert-file "${REDIS_TLS_CA_CERT}"
             # echo tls-prefer-server-ciphers yes
             echo tls-auth-clients optional
         } >> /etc/redis/redis.conf
