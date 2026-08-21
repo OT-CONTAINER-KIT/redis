@@ -15,6 +15,11 @@ on:
         description: 'Input version to release (e.g. v1.0.0)'
         required: true
         type: string
+      tag_latest:
+        description: 'Also move the latest tag to this version'
+        required: false
+        type: boolean
+        default: true
 
 run-name: "Building ${{ github.event.inputs.component }} ${{ github.event.inputs.version }}"
 
@@ -42,18 +47,30 @@ jobs:
         id: config
         run: |
           if [ "${{ github.event.inputs.component }}" = "redis" ]; then
-            echo "dockerfile=Dockerfile" >> $GITHUB_OUTPUT
-            echo "image_name=redis" >> $GITHUB_OUTPUT
-            echo "build_arg_name=REDIS_VERSION" >> $GITHUB_OUTPUT
+            dockerfile="Dockerfile"
+            image_name="redis"
+            build_arg_name="REDIS_VERSION"
           elif [ "${{ github.event.inputs.component }}" = "sentinel" ]; then
-            echo "dockerfile=Dockerfile.sentinel" >> $GITHUB_OUTPUT
-            echo "image_name=redis-sentinel" >> $GITHUB_OUTPUT
-            echo "build_arg_name=REDIS_SENTINEL_VERSION" >> $GITHUB_OUTPUT
+            dockerfile="Dockerfile.sentinel"
+            image_name="redis-sentinel"
+            build_arg_name="REDIS_SENTINEL_VERSION"
           else
-            echo "dockerfile=Dockerfile.exporter" >> $GITHUB_OUTPUT
-            echo "image_name=redis-exporter" >> $GITHUB_OUTPUT
-            echo "build_arg_name=REDIS_EXPORTER_VERSION" >> $GITHUB_OUTPUT
+            dockerfile="Dockerfile.exporter"
+            image_name="redis-exporter"
+            build_arg_name="REDIS_EXPORTER_VERSION"
           fi
+
+          # Boolean inputs arrive as the strings "true"/"false"; anything but
+          # an explicit "false" keeps the historical tag-latest behavior.
+          tags="quay.io/opstree/${image_name}:${{ github.event.inputs.version }}"
+          if [ "${{ github.event.inputs.tag_latest }}" != "false" ]; then
+            tags="${tags},quay.io/opstree/${image_name}:latest"
+          fi
+
+          echo "dockerfile=$dockerfile" >> $GITHUB_OUTPUT
+          echo "image_name=$image_name" >> $GITHUB_OUTPUT
+          echo "build_arg_name=$build_arg_name" >> $GITHUB_OUTPUT
+          echo "tags=$tags" >> $GITHUB_OUTPUT
 
       - name: Build and push image
         uses: docker/build-push-action@v2
@@ -64,6 +81,4 @@ jobs:
           push: true
           build-args: |
             ${{ steps.config.outputs.build_arg_name }}=${{ github.event.inputs.version }}
-          tags: |
-            quay.io/opstree/${{ steps.config.outputs.image_name }}:${{ github.event.inputs.version }}
-            quay.io/opstree/${{ steps.config.outputs.image_name }}:latest
+          tags: ${{ steps.config.outputs.tags }}
