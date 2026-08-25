@@ -42,8 +42,15 @@ redis_mode_setup() {
         } >> /etc/redis/redis.conf
 
         POD_HOSTNAME=$(hostname)
-        POD_IP=$(hostname -i)
-        sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${NODE_CONF_DIR}/nodes.conf"
+        POD_IP=$(getent hosts "$POD_HOSTNAME" | awk '$0=$1')
+        POD_HOST=$POD_IP
+
+        # IPv6 needs the `[fd00::1]` syntax when used in a tuple with a port
+        if [[ "${POD_HOST}" =~ ":" ]]; then
+            POD_HOST="[${POD_HOST}]"
+        fi
+
+        sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_HOST}/" "${NODE_CONF_DIR}/nodes.conf"
     else
         echo "Setting up redis in standalone mode"
     fi
@@ -142,7 +149,7 @@ start_redis() {
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
-        
+
         if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
           exec redis-server /etc/redis/redis.conf \
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
