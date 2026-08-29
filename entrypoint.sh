@@ -68,7 +68,9 @@ tls_setup() {
                 echo tls-cluster yes
             } >> /etc/redis/redis.conf
 
-            if [[ "${REDIS_MAJOR_VERSION}" == "v7" ]]; then
+            # Extract numeric version by removing 'v' prefix
+            VERSION_NUMBER="${REDIS_MAJOR_VERSION#v}"
+            if [[ "${VERSION_NUMBER}" -ge 7 ]]; then
                 {
                     echo cluster-preferred-endpoint-type hostname
                 } >> /etc/redis/redis.conf
@@ -142,11 +144,16 @@ start_redis() {
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
-        
-        if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
+
+        # Extract numeric version by removing 'v' prefix
+        VERSION_NUMBER="${REDIS_MAJOR_VERSION#v}"
+
+        if [[ "${VERSION_NUMBER}" -lt 7 ]]; then
+          # IP-only mode for Redis v6 and older
           exec redis-server /etc/redis/redis.conf \
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
         else
+          # Hostname mode for Redis v7 and newer
           {
             echo cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
             echo cluster-announce-hostname "${POD_HOSTNAME}"
