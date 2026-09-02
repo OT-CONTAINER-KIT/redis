@@ -7,6 +7,10 @@ DATA_DIR=${DATA_DIR:-"/data"}
 NODE_CONF_DIR=${NODE_CONF_DIR:-"/node-conf"}
 EXTERNAL_CONFIG_FILE=${EXTERNAL_CONFIG_FILE:-"/etc/redis/external.conf.d/redis-additional.conf"}
 REDIS_MAJOR_VERSION=${REDIS_MAJOR_VERSION:-"v7"}
+# Mirrors the Sentinel defaults: a hostname may only be announced when the
+# Sentinel monitoring this replication resolves hostnames.
+RESOLVE_HOSTNAMES=${RESOLVE_HOSTNAMES:-no}
+ANNOUNCE_HOSTNAMES=${ANNOUNCE_HOSTNAMES:-no}
 
 apply_permissions() {
     chgrp -R 1000 /etc/redis
@@ -44,6 +48,16 @@ redis_mode_setup() {
         POD_HOSTNAME=$(hostname)
         POD_IP=$(hostname -i)
         sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${NODE_CONF_DIR}/nodes.conf"
+    elif [[ "${SETUP_MODE}" == "replication" ]]; then
+        echo "Setting up redis in replication mode"
+        if [[ "${ANNOUNCE_HOSTNAMES}" == "yes" && "${RESOLVE_HOSTNAMES}" == "yes" ]]; then
+            POD_FQDN=$(hostname -f)
+            if [[ "${POD_FQDN}" == *.* ]]; then
+                echo "replica-announce-ip ${POD_FQDN}" >> /etc/redis/redis.conf
+            else
+                echo "Warning: hostname '${POD_FQDN}' is not fully qualified; not setting replica-announce-ip"
+            fi
+        fi
     else
         echo "Setting up redis in standalone mode"
     fi
@@ -142,7 +156,7 @@ start_redis() {
         else
             CLUSTER_ANNOUNCE_IP="${POD_IP}"
         fi
-        
+
         if [[ "${REDIS_MAJOR_VERSION}" != "v7" ]]; then
           exec redis-server /etc/redis/redis.conf \
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"

@@ -25,6 +25,14 @@ sentinel_mode_setup(){
     echo "sentinel failover-timeout ${MASTER_GROUP_NAME} ${FAILOVER_TIMEOUT}"
     echo "SENTINEL resolve-hostnames ${RESOLVE_HOSTNAMES}"
     echo "SENTINEL announce-hostnames ${ANNOUNCE_HOSTNAMES}"
+    if [[ "${ANNOUNCE_HOSTNAMES}" == "yes" && "${RESOLVE_HOSTNAMES}" == "yes" ]]; then
+      SENTINEL_FQDN=$(hostname -f)
+      if [[ "${SENTINEL_FQDN}" == *.* ]]; then
+        echo "sentinel announce-ip ${SENTINEL_FQDN}"
+      else
+        echo "Warning: hostname '${SENTINEL_FQDN}' is not fully qualified; not setting sentinel announce-ip" >&2
+      fi
+    fi
     if [[ -n "${MASTER_PASSWORD}" ]];then
       echo "sentinel auth-pass ${MASTER_GROUP_NAME} ${MASTER_PASSWORD}"
     fi
@@ -32,7 +40,7 @@ sentinel_mode_setup(){
       (echo -n "sentinel myid "; echo "${SENTINEL_ID}" | sha1sum | awk '{ print $1 }')
     fi
   }>> /etc/redis/sentinel.conf
- 
+
 }
 
 external_config() {
