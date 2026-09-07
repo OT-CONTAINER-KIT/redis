@@ -39,6 +39,15 @@ sentinel_mode_setup(){
     if [[ -n "${SENTINEL_ID}" ]];then
       (echo -n "sentinel myid "; echo "${SENTINEL_ID}" | sha1sum | awk '{ print $1 }')
     fi
+    # When hostname-based announcements are enabled, announce this sentinel's
+    # own FQDN so that peer sentinels and clients can reach it by DNS name.
+    # The $IP variable holds the *master's* address, NOT this sentinel's.
+    if [[ "${ANNOUNCE_HOSTNAMES}" == "yes" && "${RESOLVE_HOSTNAMES}" == "yes" ]]; then
+      SENTINEL_FQDN="$(hostname -f 2>/dev/null)"
+      if [[ -n "${SENTINEL_FQDN}" && "${SENTINEL_FQDN}" != "$(hostname)" ]]; then
+        echo "sentinel announce-ip ${SENTINEL_FQDN}"
+      fi
+    fi
   }>> /etc/redis/sentinel.conf
 
 }

@@ -60,6 +60,17 @@ redis_mode_setup() {
         fi
     else
         echo "Setting up redis in standalone mode"
+        # For replication mode, set replica-announce-ip to the pod's FQDN so
+        # that sentinels track replicas by hostname rather than ephemeral pod IP.
+        if [[ "${ANNOUNCE_HOSTNAMES}" == "yes" && "${RESOLVE_HOSTNAMES}" == "yes" ]]; then
+            REPLICA_FQDN="$(hostname -f 2>/dev/null)"
+            if [[ -n "${REPLICA_FQDN}" && "${REPLICA_FQDN}" != "$(hostname)" ]]; then
+                {
+                    echo "replica-announce-ip ${REPLICA_FQDN}"
+                    echo "replica-announce-port ${REDIS_PORT:-6379}"
+                } >> /etc/redis/redis.conf
+            fi
+        fi
     fi
 }
 
