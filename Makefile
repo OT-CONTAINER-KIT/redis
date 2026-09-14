@@ -44,6 +44,12 @@ docker-build-redis:
 docker-push-redis:
 	docker buildx build --push --platform="linux/arm64,linux/amd64" -t ${IMG} -f Dockerfile .
 
+docker-build-redis-modules:
+	docker buildx build --build-arg BUILD_WITH_MODULES=yes --platform="linux/arm64,linux/amd64" -t "${IMG}-modules" -f Dockerfile .
+
+docker-push-redis-modules:
+	docker buildx build --build-arg BUILD_WITH_MODULES=yes --push --platform="linux/arm64,linux/amd64" -t "${IMG}-modules" -f Dockerfile .
+
 docker-build-redis-sentinel:
 	docker buildx build --platform="linux/arm64,linux/amd64" -t ${SENTINEL_IMG} -f Dockerfile.sentinel .
 
