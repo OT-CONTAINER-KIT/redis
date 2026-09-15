@@ -46,8 +46,11 @@ redis_mode_setup() {
         } >> /etc/redis/redis.conf
 
         POD_HOSTNAME=$(hostname)
-        POD_IP=$(hostname -i)
-        sed -i -e "/myself/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${POD_IP}/" "${NODE_CONF_DIR}/nodes.conf"
+        # Resolve hostname via getent (supports both IPv4 and IPv6); NR==1 keeps only the first address on dual-stack/multi-record results
+        POD_IP=$(getent hosts "${POD_HOSTNAME}" | awk 'NR==1 {print $1}')
+        # Fail fast on empty IP: starting with an empty cluster-announce-ip silently corrupts the cluster topology
+        [[ -z "${POD_IP}" ]] && { echo "FATAL: cannot determine pod IP" >&2; exit 1; }
+        sed -i -e "/myself/ s#^\(\S*\s*\)\S*\(:[0-9]\+@[0-9]\+\)#\1${POD_IP}\2#" "${NODE_CONF_DIR}/nodes.conf"
     elif [[ "${SETUP_MODE}" == "replication" ]]; then
         echo "Setting up redis in replication mode"
         if [[ "${ANNOUNCE_HOSTNAMES}" == "yes" && "${RESOLVE_HOSTNAMES}" == "yes" ]]; then
