@@ -99,7 +99,31 @@ start_sentinel() {
   exec redis-sentinel /etc/redis/sentinel.conf
 }
 
+reset_generated_config() {
+  # Every writer below APPENDS, and a running sentinel CONFIG REWRITEs its own
+  # `sentinel monitor <group> <ip> <port> <quorum>` line into the same file.
+  # /etc/redis is typically an emptyDir (the operator's StatefulSet) which
+  # survives a CONTAINER restart, so the second start of a pod reads two
+  # monitor lines for one group and dies:
+  #
+  #   *** FATAL CONFIG FILE ERROR ***
+  #   >>> 'sentinel monitor mymaster 0.0.0.0 6379 2'
+  #   Duplicate master name.
+  #
+  # It never recovers: each CrashLoopBackOff restart appends one more line,
+  # and only deleting the pod clears the volume. Regenerating from scratch is
+  # safe — the generated half is rebuilt from the environment right below, and
+  # the rewritten half (myid, epochs, known-replica/known-sentinel) is
+  # discovery state a starting sentinel relearns from the monitored master and
+  # its peers, exactly as a brand-new pod does.
+  if [[ -f /etc/redis/sentinel.conf ]]; then
+    echo "Regenerating /etc/redis/sentinel.conf (a config left by a previous start would duplicate 'sentinel monitor')"
+    rm -f /etc/redis/sentinel.conf
+  fi
+}
+
 main_function() {
+  reset_generated_config
   set_sentinel_password
   sentinel_mode_setup
   port_setup
