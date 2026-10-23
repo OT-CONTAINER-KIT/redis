@@ -161,9 +161,20 @@ start_redis() {
           exec redis-server /etc/redis/redis.conf \
           --cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
         else
+          # Announce the fully-qualified hostname instead of the short $(hostname) so that clients which
+          # resolve the announced cluster-announce-hostname (e.g. the Lettuce cluster topology refresh)
+          # can reach every node, including from another namespace. A short pod name does not resolve
+          # outside its own pod. Mirrors the replication-mode replica-announce-ip logic in this file.
+          POD_FQDN=$(hostname -f)
+          if [[ "${POD_FQDN}" == *.* ]]; then
+            ANNOUNCE_HOSTNAME="${POD_FQDN}"
+          else
+            echo "Warning: hostname '${POD_FQDN}' is not fully qualified; announcing short name '${POD_HOSTNAME}'"
+            ANNOUNCE_HOSTNAME="${POD_HOSTNAME}"
+          fi
           {
             echo cluster-announce-ip "${CLUSTER_ANNOUNCE_IP}"
-            echo cluster-announce-hostname "${POD_HOSTNAME}"
+            echo cluster-announce-hostname "${ANNOUNCE_HOSTNAME}"
           } >> /etc/redis/redis.conf
 
           exec redis-server /etc/redis/redis.conf
